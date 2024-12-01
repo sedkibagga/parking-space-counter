@@ -26,20 +26,20 @@ import org.springframework.web.server.ResponseStatusException;
 @RequiredArgsConstructor
 @Slf4j
 public class UserService {
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository ;
+    private final PasswordEncoder passwordEncoder ;
     private final AuthenticationManager authenticationManager;
-    private final JwtService jwtService;
-    private final UserInformationRepository userInformationRepository;
+    private final JwtService jwtService ;
+    private final UserInformationRepository userInformationRepository ;
 
-    public CreateUserResponse createUserResponse(CreateUserDto createUserDto) {
+    public CreateUserResponse createUserResponse (CreateUserDto createUserDto) {
         try {
-            if (this.userRepository.findByEmail(createUserDto.getEmail()).isPresent()) {
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already exists");
-            }
-            if (this.userRepository.findByCin(createUserDto.getCin()).isPresent()) {
-                throw new ResponseStatusException(HttpStatus.CONFLICT, "Cin already exists");
-            }
+             if (this.userRepository.findByEmail(createUserDto.getEmail()).isPresent()) {
+                 throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already exists");
+             }
+             if (this.userRepository.findByCin(createUserDto.getCin()).isPresent()) {
+                 throw new ResponseStatusException(HttpStatus.CONFLICT, "Cin already exists");
+             }
             User user = User.builder()
                     .firstName(createUserDto.getFirstName())
                     .lastName(createUserDto.getLastName())
@@ -49,7 +49,7 @@ public class UserService {
                     .role("CLIENT")
                     .tel(createUserDto.getTel())
                     .build();
-            User savedUser = this.userRepository.save(user);
+            User savedUser = this.userRepository.save(user) ;
             return CreateUserResponse.builder()
                     .firstName(savedUser.getFirstName())
                     .lastName(savedUser.getLastName())
@@ -107,7 +107,7 @@ public class UserService {
                     .role("ADMIN")
                     .tel(createAdminDto.getTel())
                     .build();
-            User savedUser = this.userRepository.save(user);
+            User savedUser = this.userRepository.save(user) ;
             return CreateAdminResponse.builder()
                     .firstName(savedUser.getFirstName())
                     .lastName(savedUser.getLastName())
@@ -120,17 +120,16 @@ public class UserService {
             throw new RuntimeException(e);
         }
     }
-
-    public CreateUserCarInformationResponse createUserCarInformation(CreateUserInformationDto createUserInformationDto) {
+    public CreateUserCarInformationResponse createUserCarInformation (CreateUserInformationDto createUserInformationDto) {
         try {
             User user = this.userRepository.findById(createUserInformationDto.getUserId()).orElseThrow(() -> new RuntimeException("User not found"));
-            UserCarInformation userCarInformation = UserCarInformation.builder()
+            UserCarInformation userCarInformation  = UserCarInformation.builder()
                     .RegistrationNumber(createUserInformationDto.getRegistrationNumber())
                     .Model(createUserInformationDto.getModel())
                     .Color(createUserInformationDto.getColor())
                     .user(user)
                     .build();
-            UserCarInformation savedUserCarInformation = this.userInformationRepository.save(userCarInformation);
+            UserCarInformation savedUserCarInformation = this.userInformationRepository.save(userCarInformation) ;
             return CreateUserCarInformationResponse.builder()
                     .id(savedUserCarInformation.getId())
                     .RegistrationNumber(savedUserCarInformation.getRegistrationNumber())
@@ -138,9 +137,8 @@ public class UserService {
                     .Color(savedUserCarInformation.getColor())
                     .user(user)
                     .build();
-        } catch (Exception e) {
+    } catch (Exception e) {
             log.info(e.getMessage());
             throw new RuntimeException(e);
         }
-    }
 }

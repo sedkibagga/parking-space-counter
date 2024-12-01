@@ -25,7 +25,8 @@ public class User implements UserDetails {
     private Integer id ;
     private String firstName ;
     private String lastName ;
-    private String Cin ;
+    @Column(name = "Cin")
+    private String cin ;
     private String email ;
     private String password ;
     private String role;
@@ -33,7 +34,9 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<UserCarInformation> userCarInformations;
-
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private List<ParkingHistoryOfUser> parkingHistoryOfUsers ;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role));

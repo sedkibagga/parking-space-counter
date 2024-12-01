@@ -1,0 +1,2 @@
+package com.bagga.springboot.repositories;public interface ParkingHistoryOfUserRepository {
+}

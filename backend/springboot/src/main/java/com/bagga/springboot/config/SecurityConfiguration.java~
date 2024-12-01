@@ -25,6 +25,7 @@ public class SecurityConfiguration {
                 .csrf(csrf-> csrf.disable())
                 .authorizeHttpRequests(auth-> auth
                         .requestMatchers("/api/login").permitAll()
+                        .requestMatchers("/api/createClient").permitAll()
                         .requestMatchers("/api/createAdmin").permitAll()
                         .requestMatchers("/api/zones/**").permitAll()
                         .anyRequest().authenticated()
