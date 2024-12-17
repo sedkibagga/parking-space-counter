@@ -2,8 +2,10 @@ package com.bagga.springboot.reservations;
 
 import com.bagga.springboot.config.JwtService;
 import com.bagga.springboot.entities.ParkingHistoryOfUser;
+import com.bagga.springboot.entities.ReservedPlaces;
 import com.bagga.springboot.entities.User;
 import com.bagga.springboot.repositories.ParkingHistoryOfUserRepository;
+import com.bagga.springboot.repositories.ReservedPlacesRepository;
 import com.bagga.springboot.repositories.UserRepository;
 import com.bagga.springboot.reservations.zoneStatus.ZoneStatus;
 import lombok.RequiredArgsConstructor;
@@ -13,9 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -26,11 +26,13 @@ public class ReservationController {
     private final JwtService jwtService;
     private final UserRepository userRepository;
     private final ParkingHistoryOfUserRepository parkingHistoryOfUserRepository;
-    public ReservationController(JwtService jwtService, UserRepository userRepository, ParkingHistoryOfUserRepository parkingHistoryOfUserRepository) {
+    private final ReservedPlacesRepository reservedPlacesRepository ;
+    public ReservationController(JwtService jwtService, UserRepository userRepository, ParkingHistoryOfUserRepository parkingHistoryOfUserRepository , ReservedPlacesRepository reservedPlacesRepository) {
         this.jwtService = jwtService;
         this.userRepository = userRepository;
         this.parkingHistoryOfUserRepository = parkingHistoryOfUserRepository;
-        for (int i = 1; i < 11; i++) {
+        this.reservedPlacesRepository = reservedPlacesRepository;
+        for (int i = 1; i < 20; i++) {
             zones.put(i, new ZoneStatus(i, "free"));
         }
     }
@@ -46,15 +48,34 @@ public class ReservationController {
     }
 
 
+//    @GetMapping("/permit/free")
+//    public List<ZoneStatus> getFreeZones() {
+//        log.info("Free Zones: {}", zones.values().stream()
+//                .filter(zone -> zone.getStatus().equals("free"))
+//                .collect(Collectors.toList()));
+//        return zones.values().stream()
+//                .filter(zone-> zone.getStatus().equals("free"))
+//                .collect(Collectors.toList());
+//    }
     @GetMapping("/permit/free")
-    public List<ZoneStatus> getFreeZones() {
-        log.info("Free Zones: {}", zones.values().stream()
+    public List<ZoneStatus> getLibreZones() {
+        List<ZoneStatus> freeZonesFromCamera = zones.values().stream()
                 .filter(zone -> zone.getStatus().equals("free"))
-                .collect(Collectors.toList()));
-        return zones.values().stream()
-                .filter(zone-> zone.getStatus().equals("free"))
+                .collect(Collectors.toList());
+
+        List<ReservedPlaces> reservedPlaces = this.reservedPlacesRepository.findAll();
+
+        Set<Integer> reservedZoneIds = reservedPlaces.stream()
+                .map(ReservedPlaces::getZoneId)
+                .collect(Collectors.toSet());
+
+        return freeZonesFromCamera.stream()
+                .filter(zone -> !reservedZoneIds.contains(zone.getZoneId()))
                 .collect(Collectors.toList());
     }
+
+
+
 
     @PostMapping("/reserve/{zoneId}")
     public ResponseEntity<String> reserveZone(@PathVariable int zoneId , @RequestHeader("Authorization") String authHeader) {
@@ -75,6 +96,11 @@ public class ReservationController {
        ParkingHistoryOfUser savedParkingHistoryOfUser = this.parkingHistoryOfUserRepository.save(parkingHistoryOfUser);
        user.getParkingHistoryOfUsers().add(savedParkingHistoryOfUser);
        this.userRepository.save(user);
+        ReservedPlaces reservedPlaces = ReservedPlaces.builder()
+                .zoneId(zoneId)
+                .status("reserved")
+                .build();
+        this.reservedPlacesRepository.save(reservedPlaces);
         return ResponseEntity.ok("Zone reserved successfully.");
     }
 
