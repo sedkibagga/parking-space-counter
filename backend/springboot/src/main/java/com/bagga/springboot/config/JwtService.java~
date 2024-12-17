@@ -24,10 +24,11 @@ public class JwtService {
             .filename(".env")
             .load();
 
+    // Access SECRET_KEY only after Dotenv has been initialized
     private static final String SECRET_KEY = dotenv.get("SECRET_KEY");
 
     public JwtService() {
-
+        // Log SECRET_KEY for debugging purposes (avoid printing in production)
         log.info("SECRET_KEY: {}", dotenv.get("SECRET_KEY"));
     }
 
