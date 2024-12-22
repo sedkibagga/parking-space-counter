@@ -1,8 +1,15 @@
-import React from 'react'
+import { Stack } from '@mui/material'
+
+import ReftSection from '../Components/RightSection'
+import SignUpSection from '../Components/SignUpSection'
 
 function Signup() {
     return (
-        <div>Signup</div>
+        <Stack direction="row">
+            <SignUpSection />
+            <ReftSection />
+
+        </Stack>
     )
 }
 

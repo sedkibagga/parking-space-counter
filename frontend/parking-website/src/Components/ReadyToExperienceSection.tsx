@@ -1,7 +1,7 @@
 
 import { Box, Typography } from '@mui/material';
 import { motion } from 'framer-motion';  // Import motion from framer-motion
-import image from '../assets/Capture2.jpg';
+import image from '../assets/Capture2.png';
 
 const ReadyToExperienceSection = () => (
     <Box>
@@ -25,7 +25,7 @@ const ReadyToExperienceSection = () => (
             alt="Car"
             sx={{
                 width: "100%", // Image takes full width of the container
-                height: "60%", // Maintain aspect ratio
+                height: "60vh", // Maintain aspect ratio
                 display: "block", // Ensures no extra space below image
             }}
         />

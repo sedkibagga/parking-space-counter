@@ -96,7 +96,7 @@ const FooterSection = () => {
                             >
                                 Quick Links
                             </Typography>
-                            {[{ name: "Home", href: "/" }, { name: "About Us", href: "/about" }, { name: "Our Services", href: "/services" }, { name: "Reservation", href: "/reservation" }, { name: "Contact", href: "/contact" }].map((link, index) => (
+                            {[{ name: "Home", href: "/Home" }, { name: "About Us", href: "/about" }, { name: "Our Services", href: "/services" }, { name: "Reservation", href: "/reservation" }, { name: "Contact", href: "/contact" }].map((link, index) => (
                                 <MuiLink
                                     key={index}
                                     href={link.href}

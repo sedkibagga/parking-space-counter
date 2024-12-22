@@ -1,9 +1,9 @@
 import React from 'react';
-import log from '/src/assets/log.jpeg';
+import image from '../assets/Capture3.png';
 import Box from '@mui/material/Box';
 import { Divider } from '@mui/material';
 
-const LeftSection: React.FC = () => {
+const ReftSection: React.FC = () => {
     return (
         <Box
             display="flex"
@@ -13,10 +13,10 @@ const LeftSection: React.FC = () => {
 
             sx={{ width: '50%', marginLeft: 'auto', marginRight: 0 }}
         >
-            <Divider orientation="vertical" sx={{ bgcolor: '#2F4558', width: 2 }} flexItem />
+            <Divider orientation="vertical" sx={{ bgcolor: '#050507', width: 2 }} flexItem />
             <Box
                 component="img"
-                src={log}
+                src={image}
                 alt="CARPARK"
                 sx={{ width: '98.5%', height: '100%' }}
             />
@@ -24,4 +24,4 @@ const LeftSection: React.FC = () => {
     );
 };
 
-export default LeftSection;
+export default ReftSection;
