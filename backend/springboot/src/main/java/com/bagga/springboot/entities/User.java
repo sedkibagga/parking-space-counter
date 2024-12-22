@@ -36,6 +36,10 @@ public class User implements UserDetails {
     @JsonManagedReference
     @ToString.Exclude
     private List<ParkingHistoryOfUser> parkingHistoryOfUsers ;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    @ToString.Exclude
+    private List<ReservedPlaces> reservedPlaces ;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role));

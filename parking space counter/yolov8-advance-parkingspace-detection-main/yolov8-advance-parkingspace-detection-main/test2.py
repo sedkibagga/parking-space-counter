@@ -44,7 +44,7 @@ def sync_zones_with_server():
         if response.status_code == 200:
             occupied_zones = response.json()
             for zone in occupied_zones:
-                zone_status[zone['zoneId']] = 'occupied'
+                  zone_status[zone['zoneId']] = 'occupied'
     except Exception as e:
         print(f"Erreur de synchronisation avec le serveur : {e}")
 

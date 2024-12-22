@@ -47,16 +47,6 @@ public class ReservationController {
                 .collect(Collectors.toList());
     }
 
-
-//    @GetMapping("/permit/free")
-//    public List<ZoneStatus> getFreeZones() {
-//        log.info("Free Zones: {}", zones.values().stream()
-//                .filter(zone -> zone.getStatus().equals("free"))
-//                .collect(Collectors.toList()));
-//        return zones.values().stream()
-//                .filter(zone-> zone.getStatus().equals("free"))
-//                .collect(Collectors.toList());
-//    }
     @GetMapping("/permit/free")
     public List<ZoneStatus> getLibreZones() {
         List<ZoneStatus> freeZonesFromCamera = zones.values().stream()
@@ -73,9 +63,6 @@ public class ReservationController {
                 .filter(zone -> !reservedZoneIds.contains(zone.getZoneId()))
                 .collect(Collectors.toList());
     }
-
-
-
 
     @PostMapping("/reserve/{zoneId}")
     public ResponseEntity<String> reserveZone(@PathVariable int zoneId , @RequestHeader("Authorization") String authHeader) {
