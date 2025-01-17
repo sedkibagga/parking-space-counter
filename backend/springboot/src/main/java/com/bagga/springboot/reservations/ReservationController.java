@@ -32,7 +32,7 @@ public class ReservationController {
         this.userRepository = userRepository;
         this.parkingHistoryOfUserRepository = parkingHistoryOfUserRepository;
         this.reservedPlacesRepository = reservedPlacesRepository;
-        for (int i = 1; i < 20; i++) {
+        for (int i = 0; i <=15; i++) {
             zones.put(i, new ZoneStatus(i, "free"));
         }
     }
@@ -41,16 +41,21 @@ public class ReservationController {
     public List<ZoneStatus> getOccupiedZones() {
         log.info("Occupied Zones: {}", zones.values().stream()
                 .filter(zone -> zone.getStatus().equals("occupied") || zone.getStatus().equals("reserved"))
+                .map(zone -> new ZoneStatus(zone.getZoneId() + 1, zone.getStatus()))
                 .collect(Collectors.toList()));
+
         return zones.values().stream()
                 .filter(zone -> zone.getStatus().equals("occupied") || zone.getStatus().equals("reserved"))
+                .map(zone -> new ZoneStatus(zone.getZoneId()+ 1, zone.getStatus()))
                 .collect(Collectors.toList());
     }
+
 
     @GetMapping("/permit/free")
     public List<ZoneStatus> getLibreZones() {
         List<ZoneStatus> freeZonesFromCamera = zones.values().stream()
                 .filter(zone -> zone.getStatus().equals("free"))
+                .map(zone -> new ZoneStatus(zone.getZoneId() + 1, zone.getStatus()))
                 .collect(Collectors.toList());
 
         List<ReservedPlaces> reservedPlaces = this.reservedPlacesRepository.findAll();

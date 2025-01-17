@@ -133,7 +133,7 @@ while True:
     cv2.imshow('FRAME', frame)
 
     frame_counter += 1
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+    if cv2.waitKey(0) & 0xFF == ord('q'):
         break
 
 cap.release()

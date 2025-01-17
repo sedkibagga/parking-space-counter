@@ -71,7 +71,7 @@ while True:
     cv2.imshow('FRAME', frame)
     cv2.setMouseCallback('FRAME', draw)
 
-    key = cv2.waitKey(100) & 0xFF
+    key = cv2.waitKey(0) & 0xFF
     if key == ord('s'):
         save_data()  # Save when 's' is pressed
     elif key == ord('d'):  # Press 'd' to delete all saved data and reset
