@@ -25,7 +25,7 @@ except Exception as e:
 cap = cv2.VideoCapture('easy1.mp4')
 
 # Dictionnaire pour gérer l'état des zones
-zone_status = {i: 'free' for i in range(len(polylines))}
+zone_status = {i+1: 'free' for i in range(len(polylines))}
 
 # Compteur pour la synchronisation périodique
 frame_counter = 0
@@ -36,7 +36,7 @@ def sync_zones_with_server():
     try:
         response = requests.get("http://localhost:8080/api/zones/permit/free")
         if response.status_code == 200:
-            print("free " , response)
+            print("free ", response)
             free_zones = response.json()
             for zone in free_zones:
                 zone_status[zone['zoneId']] = 'free'
@@ -44,7 +44,7 @@ def sync_zones_with_server():
         if response.status_code == 200:
             occupied_zones = response.json()
             for zone in occupied_zones:
-                  zone_status[zone['zoneId']] = 'occupied'
+                zone_status[zone['zoneId']] = 'occupied'
     except Exception as e:
         print(f"Erreur de synchronisation avec le serveur : {e}")
 
@@ -96,8 +96,9 @@ while True:
             car_centers.append([cx, cy])
 
     for i, polyline in enumerate(polylines):
-        # Dessiner les polygones et points des voitures pour débogage
-        color = (0, 255, 0) if zone_status[i] == 'free' else (0, 0, 255)
+        # Adjusting for 1-based index
+        zone_id = i + 1
+        color = (0, 255, 0) if zone_status[zone_id] == 'free' else (0, 0, 255)
         cv2.polylines(frame, [polyline], True, color, 2)
         cvzone.putTextRect(frame, f'{area_names[i]}', tuple(polyline[0]), 1, 1)
 
@@ -115,9 +116,9 @@ while True:
 
         # Mettre à jour l'état local et synchroniser avec le serveur
         new_status = 'occupied' if occupied else 'free'
-        if zone_status[i] != new_status:
-            zone_status[i] = new_status
-            update_server_status(i, new_status)
+        if zone_status[zone_id] != new_status:
+            zone_status[zone_id] = new_status
+            update_server_status(zone_id, new_status)
 
     # Synchronize zone status with server every 300 frames (approximately every 10 seconds)
     if frame_counter % sync_interval == 0:
