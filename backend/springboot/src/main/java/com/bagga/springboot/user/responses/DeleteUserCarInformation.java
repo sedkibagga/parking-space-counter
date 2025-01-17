@@ -1,19 +1,18 @@
 package com.bagga.springboot.user.responses;
 
-import com.bagga.springboot.entities.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Builder
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateUserCarInformationResponse {
+@Data
+public class DeleteUserCarInformation {
     private Integer id ;
-    private String RegistrationNumber ;
-    private String Model ;
-    private String Color ;
+    private String registrationNumber ;
+    private String model ;
+    private String color ;
     private Integer userId;
 }

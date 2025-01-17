@@ -5,14 +5,8 @@ import com.bagga.springboot.entities.User;
 import com.bagga.springboot.entities.UserCarInformation;
 import com.bagga.springboot.repositories.UserInformationRepository;
 import com.bagga.springboot.repositories.UserRepository;
-import com.bagga.springboot.user.dtos.CreateAdminDto;
-import com.bagga.springboot.user.dtos.CreateUserDto;
-import com.bagga.springboot.user.dtos.CreateUserInformationDto;
-import com.bagga.springboot.user.dtos.LoginUserDto;
-import com.bagga.springboot.user.responses.CreateAdminResponse;
-import com.bagga.springboot.user.responses.CreateUserCarInformationResponse;
-import com.bagga.springboot.user.responses.CreateUserResponse;
-import com.bagga.springboot.user.responses.LoginUserResponse;
+import com.bagga.springboot.user.dtos.*;
+import com.bagga.springboot.user.responses.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -124,6 +118,7 @@ public class UserService {
     public CreateUserCarInformationResponse createUserCarInformation(CreateUserInformationDto createUserInformationDto) {
         try {
             User user = this.userRepository.findById(createUserInformationDto.getUserId()).orElseThrow(() -> new RuntimeException("User not found"));
+            log.info("user:{}", user);
             UserCarInformation userCarInformation = UserCarInformation.builder()
                     .RegistrationNumber(createUserInformationDto.getRegistrationNumber())
                     .Model(createUserInformationDto.getModel())
@@ -131,12 +126,60 @@ public class UserService {
                     .user(user)
                     .build();
             UserCarInformation savedUserCarInformation = this.userInformationRepository.save(userCarInformation);
+            log.info("savedUserCarInformation:{}", savedUserCarInformation);
             return CreateUserCarInformationResponse.builder()
                     .id(savedUserCarInformation.getId())
                     .RegistrationNumber(savedUserCarInformation.getRegistrationNumber())
                     .Model(savedUserCarInformation.getModel())
                     .Color(savedUserCarInformation.getColor())
-                    .user(user)
+                    .userId(user.getId())
+                    .build();
+        } catch (Exception e) {
+            log.info(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public UpdateUserCarInformationResponse updateUserCarInformation(UpdateUserCarInformationDto updateUserCarInformationDto , Integer id) {
+        try {
+            User user = this.userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+            UserCarInformation userCarInformation = this.userInformationRepository.findByUser(user).orElseThrow(() -> new RuntimeException("UserCarInformation not found"));
+            if (updateUserCarInformationDto.getRegistrationNumber() != null) {
+                userCarInformation.setRegistrationNumber(updateUserCarInformationDto.getRegistrationNumber());
+            }
+            if (updateUserCarInformationDto.getModel() != null) {
+                userCarInformation.setModel(updateUserCarInformationDto.getModel());
+            }
+            if (updateUserCarInformationDto.getColor() != null) {
+                userCarInformation.setColor(updateUserCarInformationDto.getColor());
+            }
+            UserCarInformation savedUserCarInformation = this.userInformationRepository.save(userCarInformation);
+            return UpdateUserCarInformationResponse.builder()
+                    .id(savedUserCarInformation.getId())
+                    .registrationNumber(savedUserCarInformation.getRegistrationNumber())
+                    .model(savedUserCarInformation.getModel())
+                    .color(savedUserCarInformation.getColor())
+                    .userId(user.getId())
+                    .build();
+
+        } catch (Exception e) {
+            log.info(e.getMessage());
+            throw new RuntimeException(e);
+        }
+
+
+    }
+
+    public DeleteUserCarInformation deleteUserCarInformation(Integer id){
+        try{
+            UserCarInformation userCarInformation = this.userInformationRepository.findById(id).orElseThrow(() -> new RuntimeException("UserCarInformation not found"));
+            this.userInformationRepository.delete(userCarInformation);
+            return DeleteUserCarInformation.builder()
+                    .id(userCarInformation.getId())
+                    .registrationNumber(userCarInformation.getRegistrationNumber())
+                    .model(userCarInformation.getModel())
+                    .color(userCarInformation.getColor())
+                    .userId(userCarInformation.getUser().getId())
                     .build();
         } catch (Exception e) {
             log.info(e.getMessage());

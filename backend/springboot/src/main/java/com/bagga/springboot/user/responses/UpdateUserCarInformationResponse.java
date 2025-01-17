@@ -6,14 +6,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Optional;
 @Builder
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateUserCarInformationResponse {
-    private Integer id ;
-    private String RegistrationNumber ;
-    private String Model ;
-    private String Color ;
+@Data
+public class UpdateUserCarInformationResponse {
+    private Integer id;
+    private String registrationNumber;
+    private String  model;
+    private String color;
     private Integer userId;
 }

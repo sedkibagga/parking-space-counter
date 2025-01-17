@@ -1,18 +1,11 @@
 package com.bagga.springboot.user;
 
-import com.bagga.springboot.user.dtos.CreateAdminDto;
-import com.bagga.springboot.user.dtos.CreateUserDto;
-import com.bagga.springboot.user.dtos.LoginUserDto;
-import com.bagga.springboot.user.responses.CreateAdminResponse;
-import com.bagga.springboot.user.responses.CreateUserResponse;
-import com.bagga.springboot.user.responses.LoginUserResponse;
+import com.bagga.springboot.user.dtos.*;
+import com.bagga.springboot.user.responses.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api")
@@ -32,5 +25,18 @@ public class UserController {
     @PostMapping("/createAdmin")
     public CreateAdminResponse createAdmin(@Valid  @RequestBody CreateAdminDto createAdminDto) {
         return this.userService.createAdmin(createAdminDto) ;
+    }
+    @PostMapping("/user/createUserCarInformation")
+    public CreateUserCarInformationResponse createUserCarInformation(@RequestBody CreateUserInformationDto createUserInformationDto) {
+        return this.userService.createUserCarInformation(createUserInformationDto) ;
+    }
+    @PatchMapping("/user/updateUserCarInformation/{id}")
+    public UpdateUserCarInformationResponse updateUserCarInformation(@RequestBody UpdateUserCarInformationDto updateUserCarInformationDto , @PathVariable Integer id) {
+        return this.userService.updateUserCarInformation(updateUserCarInformationDto , id) ;
+    }
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @DeleteMapping("/user/deleteUserCarInformation/{id}")
+    public DeleteUserCarInformation deleteUserCarInformation(@PathVariable Integer id) {
+        return this.userService.deleteUserCarInformation(id) ;
     }
 }
