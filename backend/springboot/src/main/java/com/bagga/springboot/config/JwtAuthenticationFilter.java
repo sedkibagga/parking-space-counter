@@ -35,10 +35,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String jwt;
         final String requestURI = request.getRequestURI();
 
-        if (requestURI.startsWith("/api/login") ||requestURI.startsWith("/api/createAdmin") || requestURI.startsWith("/api/zones/**")||authHeader == null || !authHeader.startsWith("Bearer") ) {
+        if (requestURI.startsWith("/api/login") ||
+                requestURI.startsWith("/api/createAdmin") ||
+                requestURI.startsWith("/swagger-ui/") ||
+                requestURI.startsWith("/v3/api-docs/") ||
+                authHeader == null ||
+                !authHeader.startsWith("Bearer")) {
             filterChain.doFilter(request, response);
             return;
         }
+
 
         jwt = authHeader.substring(7);
         String userEmail = jwtService.extractUsername(jwt);
