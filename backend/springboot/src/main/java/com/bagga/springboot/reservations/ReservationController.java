@@ -8,8 +8,7 @@ import com.bagga.springboot.repositories.ParkingHistoryOfUserRepository;
 import com.bagga.springboot.repositories.ReservedPlacesRepository;
 import com.bagga.springboot.repositories.UserRepository;
 import com.bagga.springboot.reservations.dtos.CreateReservationDto;
-import com.bagga.springboot.reservations.responses.DeletReservationResponse;
-import com.bagga.springboot.reservations.responses.GetReservationResponse;
+import com.bagga.springboot.reservations.responses.*;
 import com.bagga.springboot.reservations.zoneStatus.ZoneStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -197,6 +196,20 @@ public class ReservationController {
     @GetMapping("/getReservations")
     public List<GetReservationResponse> getReservations() {
         return this.reservationService.getReservations();
+    }
+
+    @GetMapping("/getReservationByUserId/{id}")
+    public List<GetReservationByUserId> getReservationByUserId(@PathVariable Integer id) {
+        return this.reservationService.getReservationByUserId(id) ;
+    }
+
+    @GetMapping("/getParkingHistoryByUserIds/{id}")
+    public List<GetParkingHistoryByUserId> getParkingHistoryByUserId(@PathVariable Integer userId) {
+        return this.reservationService.getParkingHistoryByUserIds(userId) ;
+    }
+    @DeleteMapping("/deleteParkingHistoryById/{id}")
+    public DeleteParkingHistoryByIdResponse deleteParkingHistoryById(@PathVariable Integer id) {
+        return this.reservationService.deleteParkingHistoryById(id) ;
     }
 
 
