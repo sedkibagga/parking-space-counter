@@ -1,8 +1,8 @@
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/PARKING_DB
-    username: bagga
-    password: 3asfour25102212
+    username: postgres
+    password: Malek@2002
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
