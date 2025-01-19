@@ -1,31 +1,49 @@
 import React from 'react';
-import { Box, TextField, Button, Typography, Container, Stack } from '@mui/material';
-import { Link as RouterLink } from 'react-router-dom';
-import { MdPersonOutline } from "react-icons/md";
+import {
+    Box,
+    TextField,
+    Button,
+    Typography,
+    Container,
+} from '@mui/material';
+import { MdPersonOutline } from 'react-icons/md';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { useAuth } from './AuthContexte';
+import { useNavigate } from 'react-router-dom';
 
 // Validation schema with Zod
-const schema = z.object({
-    name: z.string().nonempty("Name is required"),
-    email: z.string().email("Invalid email address").nonempty("Email is required"),
-    password: z.string().min(6, "Password must be at least 6 characters").nonempty("Password is required"),
-    confirmPassword: z.string().nonempty("Confirm Password is required")
-}).refine(data => data.password === data.confirmPassword, {
-    path: ["confirmPassword"],
-    message: "Passwords do not match",
-});
+const schema = z
+    .object({
+        name: z.string().nonempty('Name is required'),
+        email: z.string().email('Invalid email address').nonempty('Email is required'),
+        password: z.string().min(6, 'Password must be at least 6 characters').nonempty('Password is required'),
+        confirmPassword: z.string().nonempty('Confirm Password is required'),
+    })
+    .refine((data) => data.password === data.confirmPassword, {
+        path: ['confirmPassword'],
+        message: 'Passwords do not match',
+    });
 
 type SignUpFormInputs = z.infer<typeof schema>;
 
 const SignUpSection: React.FC = () => {
-    const { control, handleSubmit, formState: { errors } } = useForm<SignUpFormInputs>({
-        resolver: zodResolver(schema)
+    const { login } = useAuth();
+    const navigate = useNavigate(); // Hook for navigation
+    const {
+        control,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<SignUpFormInputs>({
+        resolver: zodResolver(schema),
     });
 
     const onSubmit = (data: SignUpFormInputs) => {
         console.log('Sign Up form submitted:', data);
+        const userData = { username: data.name, email: data.email };
+        login(userData); // Log in the user after successful sign-up
+        navigate('/home'); // Navigate to home page
     };
 
     return (
@@ -34,10 +52,10 @@ const SignUpSection: React.FC = () => {
                 <Typography
                     sx={{
                         fontSize: 50,
-                        textAlign: "center",
-                        color: "#050507",
-                        fontWeight: "bold",
-                        fontFamily: "sans-serif",
+                        textAlign: 'center',
+                        color: '#050507',
+                        fontWeight: 'bold',
+                        fontFamily: 'sans-serif',
                     }}
                 >
                     Welcome
@@ -58,18 +76,19 @@ const SignUpSection: React.FC = () => {
                                 label="Name"
                                 autoFocus
                                 sx={{
-                                    ml: 6, width: "380px",
-                                    "& .MuiInputLabel-root": {
-                                        "&.Mui-focused": {
-                                            color: "#050507"
-                                        }
+                                    ml: 6,
+                                    width: '380px',
+                                    '& .MuiInputLabel-root': {
+                                        '&.Mui-focused': {
+                                            color: '#050507',
+                                        },
                                     },
-                                    "& .MuiOutlinedInput-root": {
-                                        borderRadius: "15px",
-                                        "&.Mui-focused fieldset": {
-                                            borderColor: "#050507"
-                                        }
-                                    }
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '15px',
+                                        '&.Mui-focused fieldset': {
+                                            borderColor: '#050507',
+                                        },
+                                    },
                                 }}
                                 error={!!errors.name}
                                 helperText={errors.name?.message}
@@ -89,18 +108,19 @@ const SignUpSection: React.FC = () => {
                                 label="Email Address"
                                 autoComplete="email"
                                 sx={{
-                                    ml: 6, width: "380px",
-                                    "& .MuiInputLabel-root": {
-                                        "&.Mui-focused": {
-                                            color: "#050507"
-                                        }
+                                    ml: 6,
+                                    width: '380px',
+                                    '& .MuiInputLabel-root': {
+                                        '&.Mui-focused': {
+                                            color: '#050507',
+                                        },
                                     },
-                                    "& .MuiOutlinedInput-root": {
-                                        borderRadius: "15px",
-                                        "&.Mui-focused fieldset": {
-                                            borderColor: "#050507"
-                                        }
-                                    }
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '15px',
+                                        '&.Mui-focused fieldset': {
+                                            borderColor: '#050507',
+                                        },
+                                    },
                                 }}
                                 error={!!errors.email}
                                 helperText={errors.email?.message}
@@ -120,18 +140,19 @@ const SignUpSection: React.FC = () => {
                                 label="Password"
                                 type="password"
                                 sx={{
-                                    ml: 6, width: "380px",
-                                    "& .MuiInputLabel-root": {
-                                        "&.Mui-focused": {
-                                            color: "#050507"
-                                        }
+                                    ml: 6,
+                                    width: '380px',
+                                    '& .MuiInputLabel-root': {
+                                        '&.Mui-focused': {
+                                            color: '#050507',
+                                        },
                                     },
-                                    "& .MuiOutlinedInput-root": {
-                                        borderRadius: "15px",
-                                        "&.Mui-focused fieldset": {
-                                            borderColor: "#050507"
-                                        }
-                                    }
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '15px',
+                                        '&.Mui-focused fieldset': {
+                                            borderColor: '#050507',
+                                        },
+                                    },
                                 }}
                                 error={!!errors.password}
                                 helperText={errors.password?.message}
@@ -151,18 +172,19 @@ const SignUpSection: React.FC = () => {
                                 label="Confirm Password"
                                 type="password"
                                 sx={{
-                                    ml: 6, width: "380px",
-                                    "& .MuiInputLabel-root": {
-                                        "&.Mui-focused": {
-                                            color: "#050507"
-                                        }
+                                    ml: 6,
+                                    width: '380px',
+                                    '& .MuiInputLabel-root': {
+                                        '&.Mui-focused': {
+                                            color: '#050507',
+                                        },
                                     },
-                                    "& .MuiOutlinedInput-root": {
-                                        borderRadius: "15px",
-                                        "&.Mui-focused fieldset": {
-                                            borderColor: "#050507"
-                                        }
-                                    }
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '15px',
+                                        '&.Mui-focused fieldset': {
+                                            borderColor: '#050507',
+                                        },
+                                    },
                                 }}
                                 error={!!errors.confirmPassword}
                                 helperText={errors.confirmPassword?.message}
@@ -177,12 +199,12 @@ const SignUpSection: React.FC = () => {
                             sx={{
                                 mt: 3,
                                 mb: 2,
-                                backgroundColor: "#E3311D",
-                                color: "#fff",
-                                width: "150px",
-                                height: "40px",
-                                borderRadius: "15px",
-                                "&:hover": { backgroundColor: "darkred" },
+                                backgroundColor: '#E3311D',
+                                color: '#fff',
+                                width: '150px',
+                                height: '40px',
+                                borderRadius: '15px',
+                                '&:hover': { backgroundColor: 'darkred' },
                             }}
                         >
                             Sign Up

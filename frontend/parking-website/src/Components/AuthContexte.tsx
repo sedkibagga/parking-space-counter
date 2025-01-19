@@ -29,13 +29,13 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const login = (userData: User) => {
         setUser(userData);
         localStorage.setItem('userData', JSON.stringify(userData));
-        navigate('/Home'); // Redirige vers la page d'accueil ou une autre page après la connexion
+        navigate('/home'); // Redirige vers la page d'accueil ou une autre page après la connexion
     };
 
     const logout = () => {
         setUser(null);
         localStorage.removeItem('userData');
-        navigate('/login'); // Redirige vers la page de connexion après la déconnexion
+        navigate('/signin'); // Redirige vers la page de connexion après la déconnexion
     };
 
     return (

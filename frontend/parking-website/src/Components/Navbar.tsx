@@ -1,12 +1,15 @@
 import React, { useState } from "react";
 import { AppBar, Toolbar, IconButton, Box, Button, Menu, MenuItem } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import { Link, useLocation } from "react-router-dom";  // Importer useLocation de react-router-dom
-import image from '../assets/Capture.png'; // Correctement importer l'image
+import { Link, useLocation } from "react-router-dom";
+import { MdAccountCircle } from "react-icons/md";
+import image from "../assets/Capture.png"; // Import correct de l'image
+import { useAuth } from "./AuthContexte";
 
 const Navbar: React.FC = () => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const location = useLocation(); // Utilisation de useLocation pour obtenir le chemin actuel
+    const location = useLocation();
+    const { user, logout } = useAuth(); // Assurez-vous que `useAuth` retourne `user` et `logout` correctement typés
 
     const open = Boolean(anchorEl);
 
@@ -21,95 +24,39 @@ const Navbar: React.FC = () => {
     return (
         <AppBar position="static" sx={{ backgroundColor: "#000" }}>
             <Toolbar>
-                {/* Left: Logo */}
+                {/* Logo */}
                 <IconButton edge="start" color="inherit" aria-label="logo" sx={{ mr: 2 }}>
                     <img
-                        src={image} // Utilisez directement l'image importée
+                        src={image}
                         alt="logo"
                         style={{ width: "80px", height: "50px" }}
                     />
                 </IconButton>
 
-                {/* Center: Menu */}
+                {/* Desktop Menu */}
                 <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" }, justifyContent: "center" }}>
-                    <Button
-                        color="inherit"
-                        sx={{
-                            mx: 1,
-                            fontWeight: location.pathname === "/home" ? "bold" : "normal", // Vérifier si le chemin actuel est "/home"
-                            fontSize: location.pathname === "/home" ? "0.9rem" : "0.8rem", // Réduire la taille de la police
-                            "&:hover": {
-                                color: "#f44336", // Changer la couleur au survol
-                                fontSize: "0.9rem", // Taille de police survolée
-                            }
-                        }}
-                        component={Link} to="/home"
-                    >
-                        Home
-                    </Button>
-                    <Button
-                        color="inherit"
-                        sx={{
-                            mx: 1,
-                            fontWeight: location.pathname === "/about" ? "bold" : "normal",
-                            fontSize: location.pathname === "/about" ? "0.9rem" : "0.8rem",
-                            "&:hover": {
-                                color: "#f44336",
-                                fontSize: "0.9rem",
-                            }
-                        }}
-                        component={Link} to="/about"
-                    >
-                        About Us
-                    </Button>
-                    <Button
-                        color="inherit"
-                        sx={{
-                            mx: 1,
-                            fontWeight: location.pathname === "/services" ? "bold" : "normal",
-                            fontSize: location.pathname === "/services" ? "0.9rem" : "0.8rem",
-                            "&:hover": {
-                                color: "#f44336",
-                                fontSize: "0.9rem",
-                            }
-                        }}
-                        component={Link} to="/services"
-                    >
-                        Services
-                    </Button>
-                    <Button
-                        color="inherit"
-                        sx={{
-                            mx: 1,
-                            fontWeight: location.pathname === "/reservation" ? "bold" : "normal",
-                            fontSize: location.pathname === "/reservation" ? "0.9rem" : "0.8rem",
-                            "&:hover": {
-                                color: "#f44336",
-                                fontSize: "0.9rem",
-                            }
-                        }}
-                        component={Link} to="/reservation"
-                    >
-                        Reservation
-                    </Button>
-                    <Button
-                        color="inherit"
-                        sx={{
-                            mx: 1,
-                            fontWeight: location.pathname === "/contact" ? "bold" : "normal",
-                            fontSize: location.pathname === "/contact" ? "0.9rem" : "0.8rem",
-                            "&:hover": {
-                                color: "#f44336",
-                                fontSize: "0.9rem",
-                            }
-                        }}
-                        component={Link} to="/contact"
-                    >
-                        Contact
-                    </Button>
+                    {["home", "about", "services", "reservation", "contact"].map((item) => (
+                        <Button
+                            key={item}
+                            color="inherit"
+                            sx={{
+                                mx: 1,
+                                fontWeight: location.pathname === `/${item}` ? "bold" : "normal",
+                                fontSize: location.pathname === `/${item}` ? "0.9rem" : "0.8rem",
+                                "&:hover": {
+                                    color: "#f44336",
+                                    fontSize: "0.9rem",
+                                },
+                            }}
+                            component={Link}
+                            to={`/${item}`}
+                        >
+                            {item.charAt(0).toUpperCase() + item.slice(1).replace(/([a-z])([A-Z])/g, "$1 $2")}
+                        </Button>
+                    ))}
                 </Box>
 
-                {/* Responsive Menu for Mobile */}
+                {/* Mobile Menu */}
                 <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
                     <IconButton
                         color="inherit"
@@ -126,58 +73,62 @@ const Navbar: React.FC = () => {
                         onClose={handleMenuClose}
                         sx={{ display: { xs: "block", md: "none" } }}
                     >
-                        <MenuItem
-                            onClick={() => { handleMenuClose(); }}
-                            component={Link} to="/home"
-                        >
-                            Home
-                        </MenuItem>
-                        <MenuItem
-                            onClick={() => { handleMenuClose(); }}
-                            component={Link} to="/about"
-                        >
-                            About Us
-                        </MenuItem>
-                        <MenuItem
-                            onClick={() => { handleMenuClose(); }}
-                            component={Link} to="/services"
-                        >
-                            Services
-                        </MenuItem>
-                        <MenuItem
-                            onClick={() => { handleMenuClose(); }}
-                            component={Link} to="/reservation"
-                        >
-                            Reservation
-                        </MenuItem>
-                        <MenuItem
-                            onClick={() => { handleMenuClose(); }}
-                            component={Link} to="/contact"
-                        >
-                            Contact
-                        </MenuItem>
+                        {["home", "about", "services", "reservation", "contact"].map((item) => (
+                            <MenuItem
+                                key={item}
+                                onClick={handleMenuClose}
+                                component={Link}
+                                to={`/${item}`}
+                            >
+                                {item.charAt(0).toUpperCase() + item.slice(1).replace(/([a-z])([A-Z])/g, "$1 $2")}
+                            </MenuItem>
+                        ))}
                     </Menu>
                 </Box>
 
-                {/* Right: Buttons */}
+                {/* Right Section */}
                 <Box>
-                    <Button
-                        variant="contained"
-                        color="error"
-                        sx={{ mx: 1 }}
-                        component={Link}
-                        to="/signup" // Link vers la page d'inscription
-                    >
-                        Sign Up
-                    </Button>
-                    <Button
-                        variant="outlined"
-                        color="inherit"
-                        component={Link}
-                        to="/signin" // Link vers la page de connexion
-                    >
-                        Sign In
-                    </Button>
+                    {!!user ? (
+                        <>
+                            <Link to="/profil">
+                                <IconButton sx={{ color: "white" }}>
+                                    <MdAccountCircle size={30} />
+                                </IconButton>
+                            </Link>
+                            <Button
+                                onClick={logout}
+                                sx={{
+                                    backgroundColor: '#E3311D',
+                                    color: "white",
+                                    minWidth: "80px",
+                                    height: "35px",
+                                    ml: 2,
+                                }}
+                            >
+                                Log Out
+                            </Button>
+                        </>
+                    ) : (
+                        <>
+                            <Button
+                                variant="contained"
+                                color="error"
+                                sx={{ mx: 1 }}
+                                component={Link}
+                                to="/signup"
+                            >
+                                Sign Up
+                            </Button>
+                            <Button
+                                variant="outlined"
+                                color="inherit"
+                                component={Link}
+                                to="/signin"
+                            >
+                                Sign In
+                            </Button>
+                        </>
+                    )}
                 </Box>
             </Toolbar>
         </AppBar>

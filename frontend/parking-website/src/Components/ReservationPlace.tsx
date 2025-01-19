@@ -10,24 +10,35 @@ import {
 } from "@mui/material";
 import { motion } from "framer-motion";
 import image from "../assets/image1.png";
+import { useAuth } from "./AuthContexte"; // Importer useAuth
+import { Logout } from "@mui/icons-material";
+import { Link } from "react-router-dom";
 
-// Array of 12 places with initial statuses (Libre or Occupé)
-const initialPlaces = Array.from({ length: 12 }, (_, index) => ({
+// Type pour les places
+interface Place {
+    id: number;
+    status: "Libre" | "Occupé";
+}
+
+const initialPlaces: Place[] = Array.from({ length: 12 }, (_, index) => ({
     id: index + 1,
-    status: index % 3 === 0 ? "Occupé" : "Libre", // Example: every 3rd place is occupied
+    status: index % 3 === 0 ? "Occupé" : "Libre",
 }));
 
 const ReservationPlace: React.FC = () => {
     const [places, setPlaces] = useState(initialPlaces);
     const [popupOpen, setPopupOpen] = useState(false);
+    const { user, login } = useAuth(); // Utilisation de useAuth pour gérer l'état de connexion
 
-    const handlePlaceClick = (place: { id: number; status: string }) => {
+    const handlePlaceClick = (place: Place) => {
         if (place.status === "Libre") {
-            // Redirect to reservation form
-            window.location.href = "/Reservation/reserveform";
-        } else {
-            // Show pop-up for occupied places
-            setPopupOpen(true);
+            if (!user) {
+                // L'utilisateur n'est pas connecté, ouvrir la popup pour se connecter
+                setPopupOpen(true);
+            } else {
+                // L'utilisateur est connecté et la place est libre, redirige vers la réservation
+                window.location.href = "/Reservation/reserveform";
+            }
         }
     };
 
@@ -42,13 +53,12 @@ const ReservationPlace: React.FC = () => {
             }}
         >
             <Typography variant="h4" sx={{ fontWeight: "bold", marginBottom: "30px" }}>
-                Reserve Your Spot
+                Réservez votre place
             </Typography>
 
-            {/* Image after the reservation */}
             <Box sx={{ marginTop: "40px" }}>
                 <img
-                    src={image} // Replace with your actual image URL
+                    src={image}
                     alt="Reservation"
                     style={{
                         width: "60%",
@@ -59,15 +69,14 @@ const ReservationPlace: React.FC = () => {
                 />
             </Box>
 
-            {/* Grid of places */}
             <Box
                 sx={{
                     display: "grid",
                     gridTemplateColumns: "repeat(3, 1fr)",
-                    gap: "50px", // Increased space between the boxes
+                    gap: "50px",
                     justifyContent: "center",
                     marginLeft: "auto",
-                    marginRight: "auto", // Center the grid
+                    marginRight: "auto",
                     maxWidth: "80%",
                 }}
             >
@@ -84,14 +93,13 @@ const ReservationPlace: React.FC = () => {
                                 padding: "12px",
                                 textAlign: "center",
                                 color: "white",
-                                width: "150px", // Set width for consistency
-                                display: "flex", // Flex container for alignment
-                                alignItems: "center", // Center content vertically
-                                justifyContent: "center", // Center content horizontally
-                                flexDirection: "column", // Stack items vertically
+                                width: "150px",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                flexDirection: "column",
                             }}
                         >
-                            {/* Circle with place ID */}
                             <Typography
                                 variant="h6"
                                 sx={{
@@ -99,9 +107,9 @@ const ReservationPlace: React.FC = () => {
                                     justifyContent: "center",
                                     alignItems: "center",
                                     borderRadius: "50%",
-                                    width: "40px", // Smaller size for the circle
+                                    width: "40px",
                                     height: "40px",
-                                    marginBottom: "10px", // Space between circle and button
+                                    marginBottom: "10px",
                                     backgroundColor: "white",
                                     color: "#E3311D",
                                     fontWeight: "bold",
@@ -110,7 +118,6 @@ const ReservationPlace: React.FC = () => {
                                 {place.id}
                             </Typography>
 
-                            {/* Button for the place */}
                             <Button
                                 variant="contained"
                                 size="small"
@@ -134,7 +141,6 @@ const ReservationPlace: React.FC = () => {
                 ))}
             </Box>
 
-            {/* Popup for occupied places */}
             <Dialog
                 open={popupOpen}
                 onClose={() => setPopupOpen(false)}
@@ -142,9 +148,9 @@ const ReservationPlace: React.FC = () => {
                     sx: { backgroundColor: "black", color: "white" },
                 }}
             >
-                <DialogTitle>Place Occupée</DialogTitle>
+                <DialogTitle>Connexion requise</DialogTitle>
                 <DialogContent>
-                    <Typography>Cette place est déjà occupée.</Typography>
+                    <Typography>Veuillez vous connecter pour réserver une place.</Typography>
                 </DialogContent>
                 <DialogActions>
                     <Button
@@ -157,6 +163,19 @@ const ReservationPlace: React.FC = () => {
                     >
                         Fermer
                     </Button>
+                    <Link to='/signin'>
+                        <Button
+                            variant="contained"
+                            sx={{
+                                backgroundColor: "#4CAF50",
+                                color: "white",
+                                "&:hover": { backgroundColor: "#45A049" },
+                            }}
+
+                        >
+                            Se connecter
+                        </Button>
+                    </Link>
                 </DialogActions>
             </Dialog>
         </Box>
