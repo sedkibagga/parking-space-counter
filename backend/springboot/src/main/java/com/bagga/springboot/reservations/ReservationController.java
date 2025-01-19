@@ -9,6 +9,7 @@ import com.bagga.springboot.repositories.ReservedPlacesRepository;
 import com.bagga.springboot.repositories.UserRepository;
 import com.bagga.springboot.reservations.dtos.CreateReservationDto;
 import com.bagga.springboot.reservations.responses.DeletReservationResponse;
+import com.bagga.springboot.reservations.responses.GetReservationResponse;
 import com.bagga.springboot.reservations.zoneStatus.ZoneStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -192,6 +193,16 @@ public class ReservationController {
     public DeletReservationResponse deleteReservation(@PathVariable Integer id) {
         return this.reservationService.deleteReservation(id) ;
     }
+
+    @GetMapping("/getReservations")
+    public List<GetReservationResponse> getReservations() {
+        return this.reservationService.getReservations();
+    }
+
+
+
+
+
 
 
 }
