@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     Box,
     TextField,
@@ -12,14 +12,17 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useAuth } from './AuthContexte';
 import { useNavigate } from 'react-router-dom';
-
-// Validation schema with Zod
+import apiService from '../Apis/Services/apisService';
+import { createClientDto } from '../Apis/DataParam/dataParam';
 const schema = z
     .object({
-        name: z.string().nonempty('Name is required'),
+        firstName: z.string().nonempty('firstName is required'),
         email: z.string().email('Invalid email address').nonempty('Email is required'),
         password: z.string().min(6, 'Password must be at least 6 characters').nonempty('Password is required'),
         confirmPassword: z.string().nonempty('Confirm Password is required'),
+        lastName:z.string().nonempty('lastName is required'),
+        cin:z.string().nonempty('cin is required'),
+        tel:z.string().nonempty('tel is required')
     })
     .refine((data) => data.password === data.confirmPassword, {
         path: ['confirmPassword'],
@@ -29,8 +32,9 @@ const schema = z
 type SignUpFormInputs = z.infer<typeof schema>;
 
 const SignUpSection: React.FC = () => {
-    const { login } = useAuth();
-    const navigate = useNavigate(); // Hook for navigation
+    const navigate = useNavigate(); 
+    // const { user, setUser } = useAuth();  
+
     const {
         control,
         handleSubmit,
@@ -39,11 +43,17 @@ const SignUpSection: React.FC = () => {
         resolver: zodResolver(schema),
     });
 
-    const onSubmit = (data: SignUpFormInputs) => {
-        console.log('Sign Up form submitted:', data);
-        const userData = { username: data.name, email: data.email };
-        login(userData); // Log in the user after successful sign-up
-        navigate('/home'); // Navigate to home page
+    
+
+    const onSubmit = async (data: SignUpFormInputs): Promise<void> => {
+        try {
+            const client: createClientDto = { firstName: data.firstName, lastName: data.lastName, cin: data.cin, email: data.email, password: data.password, tel: data.tel };
+            const response = await apiService.createClient(client);
+            console.log(response);
+            navigate('/Signin');
+        } catch (error: any) {
+            console.error(error);
+        }
     };
 
     return (
@@ -64,7 +74,7 @@ const SignUpSection: React.FC = () => {
 
                 <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ mt: 3 }}>
                     <Controller
-                        name="name"
+                        name="firstName"
                         control={control}
                         defaultValue=""
                         render={({ field }) => (
@@ -72,8 +82,9 @@ const SignUpSection: React.FC = () => {
                                 {...field}
                                 margin="normal"
                                 fullWidth
-                                id="name"
-                                label="Name"
+                                id="firstName"
+                                label="firstName"
+                               
                                 autoFocus
                                 sx={{
                                     ml: 6,
@@ -90,8 +101,74 @@ const SignUpSection: React.FC = () => {
                                         },
                                     },
                                 }}
-                                error={!!errors.name}
-                                helperText={errors.name?.message}
+                                error={!!errors.firstName}
+                                helperText={errors.firstName?.message}
+                            />
+                        )}
+                    />
+                     <Controller
+                        name="lastName"
+                        control={control}
+                        defaultValue=""
+                        render={({ field }) => (
+                            <TextField
+                                {...field}
+                                margin="normal"
+                                fullWidth
+                                id="lastName"
+                                label="lastName"
+                                type="name"
+                              
+                                sx={{
+                                    ml: 6,
+                                    width: '380px',
+                                    '& .MuiInputLabel-root': {
+                                        '&.Mui-focused': {
+                                            color: '#050507',
+                                        },
+                                    },
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '15px',
+                                        '&.Mui-focused fieldset': {
+                                            borderColor: '#050507',
+                                        },
+                                    },
+                                }}
+                                error={!!errors.lastName}
+                                helperText={errors.lastName?.message}
+                            />
+                        )}
+                    />
+                     <Controller
+                        name="cin"
+                        control={control}
+                        defaultValue=""
+                        render={({ field }) => (
+                            <TextField
+                                {...field}
+                                margin="normal"
+                                fullWidth
+                                id="cin"
+                                label="cin"
+                                type="cin"
+                                
+                                sx={{
+                                    ml: 6,
+                                    width: '380px',
+                                    '& .MuiInputLabel-root': {
+                                        '&.Mui-focused': {
+                                            color: '#050507',
+                                        },
+                                    },
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '15px',
+                                        '&.Mui-focused fieldset': {
+                                            borderColor: '#050507',
+                                        },
+                                    },
+                                }}
+                                error={!!errors.cin}
+                                helperText={errors.cin?.message}
                             />
                         )}
                     />
@@ -107,6 +184,7 @@ const SignUpSection: React.FC = () => {
                                 id="email"
                                 label="Email Address"
                                 autoComplete="email"
+                               
                                 sx={{
                                     ml: 6,
                                     width: '380px',
@@ -139,6 +217,7 @@ const SignUpSection: React.FC = () => {
                                 id="password"
                                 label="Password"
                                 type="password"
+                           
                                 sx={{
                                     ml: 6,
                                     width: '380px',
@@ -171,6 +250,7 @@ const SignUpSection: React.FC = () => {
                                 id="confirmPassword"
                                 label="Confirm Password"
                                 type="password"
+                               
                                 sx={{
                                     ml: 6,
                                     width: '380px',
@@ -188,6 +268,39 @@ const SignUpSection: React.FC = () => {
                                 }}
                                 error={!!errors.confirmPassword}
                                 helperText={errors.confirmPassword?.message}
+                            />
+                        )}
+                    />
+                     <Controller
+                        name="tel"
+                        control={control}
+                        defaultValue=""
+                        render={({ field }) => (
+                            <TextField
+                                {...field}
+                                margin="normal"
+                                fullWidth
+                                id="tel"
+                                label="tel"
+                                type="tel"
+                                
+                                sx={{
+                                    ml: 6,
+                                    width: '380px',
+                                    '& .MuiInputLabel-root': {
+                                        '&.Mui-focused': {
+                                            color: '#050507',
+                                        },
+                                    },
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '15px',
+                                        '&.Mui-focused fieldset': {
+                                            borderColor: '#050507',
+                                        },
+                                    },
+                                }}
+                                error={!!errors.tel}
+                                helperText={errors.tel?.message}
                             />
                         )}
                     />

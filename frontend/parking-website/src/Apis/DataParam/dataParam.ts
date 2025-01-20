@@ -52,3 +52,8 @@ export type deletedReservationDto = {
 export type deleteHistoryParkingByIdDto = {
 
 }
+
+export type createReservationDto = {
+    reservation_Time:string,
+    reservation_Duration:string
+}

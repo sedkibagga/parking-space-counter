@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Builder
 public class LoginUserResponse {
+    private Integer id ;
     private String token ;
     private String firstName ;
     private String lastName ;

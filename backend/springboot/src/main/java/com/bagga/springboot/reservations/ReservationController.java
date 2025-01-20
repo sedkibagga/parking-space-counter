@@ -78,7 +78,7 @@ public class ReservationController {
     }
 
     @PostMapping("/reserve/{zoneId}")
-    public ResponseEntity<String> reserveZone(
+    public CreateReservationResponse reserveZone(
             @PathVariable int zoneId,
             @RequestHeader("Authorization") String authHeader,
             @RequestBody CreateReservationDto createReservationDto) {
@@ -86,7 +86,8 @@ public class ReservationController {
 
         ZoneStatus zone = zones.get(zoneId);
         if (zone == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Zone not found.");
+            //return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Zone not found.");
+            throw new IllegalArgumentException("Zone not found.");
         }
 
 
@@ -95,7 +96,8 @@ public class ReservationController {
 
                 List<ReservedPlaces> existingReservations = reservedPlacesRepository.findByZoneId(zoneId);
                 if (existingReservations.isEmpty()) {
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Zone is reserved, but no existing reservation found.");
+//                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Zone is reserved, but no existing reservation found.");
+                    throw new IllegalArgumentException("Zone is reserved, but no existing reservation found.");
                 }
 
 
@@ -116,18 +118,21 @@ public class ReservationController {
 
                         if (newReservationTime.isBefore(oldReservationEndTime) && newReservationEndTime.isAfter(oldReservationTime)) {
                             log.info("New reservation time overlaps with an existing reservation.");
-                            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                                    .body("Reservation overlaps with an existing reservation.");
+//                            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+//                                    .body("Reservation overlaps with an existing reservation.");
+                            throw new IllegalArgumentException("Reservation overlaps with an existing reservation.");
                         }
                     } catch (DateTimeParseException | NumberFormatException e) {
                         log.error("Failed to parse reservation details: {}", e.getMessage(), e);
-                        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                                .body("Invalid reservation time or duration format.");
+//                        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+//                                .body("Invalid reservation time or duration format.");
+                        throw new IllegalArgumentException("Invalid reservation time or duration format.");
                     }
                 }
             } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("Zone is not available for reservation.");
+//                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+//                        .body("Zone is not available for reservation.");
+                throw new IllegalArgumentException("Zone is not available for reservation.");
             }
         }
 
@@ -158,7 +163,8 @@ public class ReservationController {
             reservationDuration = Integer.parseInt(createReservationDto.getReservation_Duration());
         } catch (NumberFormatException e) {
             log.error("Invalid reservation duration format: {}", createReservationDto.getReservation_Duration(), e);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid reservation duration format.");
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid reservation duration format.");
+            throw new IllegalArgumentException("Invalid reservation duration format.");
         }
         double totalAmount = reservationDuration * pricePerHour;
 
@@ -174,7 +180,15 @@ public class ReservationController {
         this.reservedPlacesRepository.save(reservedPlaces);
 
 
-        return ResponseEntity.ok("Zone reserved successfully. Total amount: " + reservedPlaces.getTotal_Amount());
+//        return ResponseEntity.ok("Zone reserved successfully. Total amount: " + reservedPlaces.getTotal_Amount());
+        return CreateReservationResponse.builder()
+                .zoneId(reservedPlaces.getZoneId())
+                .status(reservedPlaces.getStatus())
+                .reservation_Time(reservedPlaces.getReservation_Time())
+                .reservation_Duration(reservedPlaces.getReservation_Duration())
+                .total_Amount(reservedPlaces.getTotal_Amount())
+                .userId(user.getId())
+                .build();
     }
 
     @PostMapping("/updateStatus/{zoneId}")

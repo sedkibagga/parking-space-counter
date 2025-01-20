@@ -1,4 +1,11 @@
+export type User = {
+    id:number,
+    token:string
+}
+
+
 export type loginResponse = {
+    id:number
     token: string,
     firstName: string,
     lastName: string,
@@ -96,4 +103,13 @@ export type deleteHistoryParkingByIdResponse = {
     firstName: string,
     lastName: string,
     createdDate: "2025-01-19T22:25:37.358Z"
+}
+
+export type createReservationResponse = {
+    zoneId:number,
+    status:string,
+    reservation_Time:string,
+    reservation_Duration:string,
+    total_Amount:string,
+    userId:number
 }

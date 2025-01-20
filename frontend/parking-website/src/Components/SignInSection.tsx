@@ -1,34 +1,41 @@
 import React from 'react';
 import { Box, TextField, Button, Typography, Container, Stack } from '@mui/material';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { MdOutlineVpnKey } from 'react-icons/md';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useAuth } from './AuthContexte';
-
-// Validation schema with Zod
+import apiService from '../Apis/Services/apisService';
+import { loginDto } from '../Apis/DataParam/dataParam';
 const schema = z.object({
     email: z.string().email('Invalid email address').nonempty('Email is required'),
-    password: z.string().min(6, 'Password must be at least 6 characters').nonempty('Password is required'),
+    password: z.string().nonempty('Password is required'),
 });
 
 type LoginFormInputs = z.infer<typeof schema>;
 
 const SignInSection: React.FC = () => {
-    const { login } = useAuth(); // Ensure useAuth is correctly implemented in your context
+    const {setUser} = useAuth();
     const { control, handleSubmit, formState: { errors } } = useForm<LoginFormInputs>({
         resolver: zodResolver(schema),
     });
 
-    const onSubmit = (data: LoginFormInputs) => {
-        console.log('Form submitted:', data);
-        const { email } = data; // Destructure email from form data
-        const userData = { username: 'SampleUser', email };
-        login(userData); // Simulate login with provided email
-        alert('Logged in successfully!');
-    };
+    const navigate = useNavigate();
 
+       
+    const onSubmit = async (data:LoginFormInputs) : Promise<void> => {
+        try {
+            const loginParam:loginDto = {email:data.email,password:data.password};
+            const response = await apiService.login(loginParam,setUser);
+            console.log("response of login :" , response);
+            navigate('/Home');
+
+        } catch(error:any) {
+            console.log("error:", error.message);
+            alert(error.message);
+        }
+    }
     return (
         <Container component="main" maxWidth="xs">
             <Box sx={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>

@@ -12,7 +12,7 @@ import { motion } from "framer-motion";
 import image from "../assets/image1.png";
 import { useAuth } from "./AuthContexte"; // Importer useAuth
 import { Logout } from "@mui/icons-material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 // Type pour les places
 interface Place {
@@ -28,20 +28,22 @@ const initialPlaces: Place[] = Array.from({ length: 12 }, (_, index) => ({
 const ReservationPlace: React.FC = () => {
     const [places, setPlaces] = useState(initialPlaces);
     const [popupOpen, setPopupOpen] = useState(false);
-    const { user, login } = useAuth(); // Utilisation de useAuth pour gérer l'état de connexion
-
+    const { user,setPlaceClicked,placeClicked } = useAuth(); // Utilisation de useAuth pour gérer l'état de connexion
+    const navigate = useNavigate();
     const handlePlaceClick = (place: Place) => {
         if (place.status === "Libre") {
             if (!user) {
+                setPlaceClicked(place.id);
                 // L'utilisateur n'est pas connecté, ouvrir la popup pour se connecter
                 setPopupOpen(true);
             } else {
+                setPlaceClicked(place.id);
                 // L'utilisateur est connecté et la place est libre, redirige vers la réservation
-                window.location.href = "/Reservation/reserveform";
+                navigate("/Reservation/reserveform"); 
             }
         }
     };
-
+    console.log("Current placeClicked state:", placeClicked); 
     return (
         <Box
             sx={{

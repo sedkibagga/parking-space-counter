@@ -28,6 +28,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/api/createAdmin").permitAll()
                         .requestMatchers("/api/zones/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/api/createClient").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sess-> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
