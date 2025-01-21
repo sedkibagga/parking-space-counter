@@ -1,23 +1,20 @@
-import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import LoginPage from './src/pages/LoginPage';
+import ParkingView from './src/pages/ParkingView';
+import ReservationForm from './src/pages/ReservationForm';
+
+const Stack = createStackNavigator();
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>the parking app </Text>
-      <StatusBar style="auto" />
-      <Text>the parking app </Text>
-
-    </View>
+    <NavigationContainer >
+      <Stack.Navigator initialRouteName="Login">
+        <Stack.Screen name="Login" component={LoginPage} />
+        <Stack.Screen name="Parking" component={ParkingView} />
+        <Stack.Screen name="ReservationForm" component={ReservationForm} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
