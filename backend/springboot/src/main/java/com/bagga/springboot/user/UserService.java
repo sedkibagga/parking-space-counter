@@ -69,6 +69,7 @@ public class UserService {
             User user = this.userRepository.findByEmail(loginUserDto.getEmail()).orElseThrow(() -> new RuntimeException("User not found"));
             String token = this.jwtService.generateToken(user);
             return LoginUserResponse.builder()
+                    .id(user.getId())
                     .firstName(user.getFirstName())
                     .lastName(user.getLastName())
                     .cin(user.getCin())

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService ;
-    @PreAuthorize("hasAuthority('ADMIN')")
+//    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/createClient")
     public CreateUserResponse createUser(@Valid  @RequestBody CreateUserDto createUserDto) {
         return this.userService.createUserResponse(createUserDto) ;

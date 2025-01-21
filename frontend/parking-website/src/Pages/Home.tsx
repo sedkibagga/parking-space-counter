@@ -8,8 +8,11 @@ import ReadyToExperienceSection from '../Components/ReadyToExperienceSection';
 import FeedbackSection from '../Components/FeedbackSection';
 import FooterSection from '../Components/FooterSection';
 import { Box } from '@mui/material';
+import { useAuth } from '../Components/AuthContexte';
 
 const Home = () => {
+    const {user} = useAuth();
+    console.log("user" , user) ;
     return (
         <Box sx={{ display: "flex", flexDirection: "column" }}>
             <Navbar />
@@ -20,6 +23,7 @@ const Home = () => {
             <ReadyToExperienceSection />
             <FeedbackSection />
             <FooterSection />
+            
         </Box>
     );
 };

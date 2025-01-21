@@ -6,8 +6,9 @@ import {
     updateUserCarDto,
     updateStatusDto,
     zonePermitOccupiedDto,
+    createReservationDto,
 }
-    from './DataParam/dataParam';
+    from '../DataParam/dataParam';
 import {
     loginResponse,
     createClientResponse,
@@ -21,14 +22,22 @@ import {
     getParkingHistoryByUserIdsResponse,
     deletedReservationResponse,
     deleteHistoryParkingByIdResponse,
-} from "./DataResponse/dataResponse";
+    User,
+    createReservationResponse,
+} from "../DataResponse/dataResponse";
+
 
 const BaseUri = "http://localhost:8080/";
 
-const login = async (data: loginDto): Promise<loginResponse> => {
+const login = async (data: loginDto, setUser: (user: loginResponse | null) => void): Promise<loginResponse> => {
     try {
-        const response = await axios.post(`${BaseUri}auth/login`, data);
+        const response = await axios.post(`${BaseUri}api/login`, data);
+        const userData: loginResponse = response.data;
+        setUser(userData);
+        localStorage.setItem('userData', JSON.stringify(userData));
+        console.log("the user in stoarage:", localStorage.getItem('userData'));
         return response.data;
+
     } catch (error: any) {
         throw new Error(error.response?.data?.message || "Login failed");
     }
@@ -36,12 +45,9 @@ const login = async (data: loginDto): Promise<loginResponse> => {
 
 const createClient = async (
     data: createClientDto,
-    token: string
 ): Promise<createClientResponse> => {
     try {
-        const response = await axios.post(`${BaseUri}clients`, data, {
-            headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await axios.post(`${BaseUri}api/createClient`, data);
         return response.data;
     } catch (error: any) {
         throw new Error(error.response?.data?.message || "Creating client failed");
@@ -93,33 +99,25 @@ const updateStatus = async (
 };
 
 const zonePermitOccupied = async (
-    data: zonePermitOccupiedDto,
-    token: string
-): Promise<zonePermitOccupiedResponse> => {
+): Promise<zonePermitOccupiedResponse[]> => {
     try {
-        const response = await axios.patch(`${BaseUri}zones/permit/occupied`, data, {
-            headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await axios.get(`${BaseUri}api/zones/permit/occupied`);
         return response.data;
     } catch (error: any) {
         throw new Error(
-            error.response?.data?.message || "Marking zone as occupied failed"
+            error.response?.data?.message || "Error of get occupied zones"
         );
     }
 };
 
 const zonePermitFree = async (
-    zoneId: string,
-    token: string
-): Promise<zonePermitFreeResponse> => {
+): Promise<zonePermitFreeResponse[]> => {
     try {
-        const response = await axios.patch(`${BaseUri}zones/${zoneId}/free`, {}, {
-            headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await axios.get(`${BaseUri}api/zones/permit/free`);
         return response.data;
     } catch (error: any) {
         throw new Error(
-            error.response?.data?.message || "Marking zone as free failed"
+            error.response?.data?.message || "Error of get free zones"
         );
     }
 };
@@ -204,6 +202,26 @@ const deleteParkingHistory = async (
     }
 };
 
+const createReservation = async (
+    reservation: createReservationDto,
+    zone: number,
+    token: string
+): Promise<createReservationResponse> => {
+    try {
+
+        const response = await axios.post(`${BaseUri}api/zones/reserve/${zone}`, reservation, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        return response.data;
+    } catch (error: any) {
+
+        throw new Error(
+            error.response?.data?.message || "Creating reservation failed"
+        );
+    }
+}
+
+
 const apiService = {
     login,
     createClient,
@@ -217,6 +235,7 @@ const apiService = {
     getParkingHistoryByUserId,
     deleteReservation,
     deleteParkingHistory,
+    createReservation
 };
 
 export default apiService;

@@ -1,4 +1,11 @@
+export type User = {
+    id:number,
+    token:string
+}
+
+
 export type loginResponse = {
+    id:number
     token: string,
     firstName: string,
     lastName: string,
@@ -41,11 +48,11 @@ export type updateStatusResponse = {
     update: string
 }
 export type zonePermitOccupiedResponse = {
-    zoneId: 1073741824,
+    zoneId: number,
     status: string
 }
 export type zonePermitFreeResponse = {
-    zoneId: 1073741824,
+    zoneId: number,
     status: string
 }
 export type getReservationResponse = {
@@ -96,4 +103,26 @@ export type deleteHistoryParkingByIdResponse = {
     firstName: string,
     lastName: string,
     createdDate: "2025-01-19T22:25:37.358Z"
+}
+
+export type createReservationResponse = {
+    zoneId:number,
+    status:string,
+    reservation_Time:string,
+    reservation_Duration:string,
+    total_Amount:string,
+    userId:number
+}
+
+export type factureReservationResponse = {
+    zoneId:number,
+    status:string,
+    reservation_Time:string,
+    reservation_Duration:string,
+    total_Amount:string,
+    firstName:string,
+    lastName:string,
+    cin:string,
+    email:string,
+    tel:string
 }

@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class JwtService {
     private static final Dotenv dotenv = Dotenv.configure()
-            .directory("C:\\Users\\LENOVO\\Desktop\\parking-space-counter\\backend\\springboot\\src\\main\\resources\\.env")
+            .directory("C:\\Users\\Dell\\Desktop\\The Future of Parking\\backend\\springboot\\src\\main\\resources")
             .filename(".env")
             .load();
 
