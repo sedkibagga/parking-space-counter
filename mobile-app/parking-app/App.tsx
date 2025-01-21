@@ -16,5 +16,7 @@ export default function App() {
         <Stack.Screen name="ReservationForm" component={ReservationForm} />
       </Stack.Navigator>
     </NavigationContainer>
+
+  
   );
 }
