@@ -99,33 +99,25 @@ const updateStatus = async (
 };
 
 const zonePermitOccupied = async (
-    data: zonePermitOccupiedDto,
-    token: string
-): Promise<zonePermitOccupiedResponse> => {
+): Promise<zonePermitOccupiedResponse[]> => {
     try {
-        const response = await axios.patch(`${BaseUri}zones/permit/occupied`, data, {
-            headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await axios.get(`${BaseUri}api/zones/permit/occupied`);
         return response.data;
     } catch (error: any) {
         throw new Error(
-            error.response?.data?.message || "Marking zone as occupied failed"
+            error.response?.data?.message || "Error of get occupied zones"
         );
     }
 };
 
 const zonePermitFree = async (
-    zoneId: string,
-    token: string
-): Promise<zonePermitFreeResponse> => {
+): Promise<zonePermitFreeResponse[]> => {
     try {
-        const response = await axios.patch(`${BaseUri}zones/${zoneId}/free`, {}, {
-            headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await axios.get(`${BaseUri}api/zones/permit/free`);
         return response.data;
     } catch (error: any) {
         throw new Error(
-            error.response?.data?.message || "Marking zone as free failed"
+            error.response?.data?.message || "Error of get free zones"
         );
     }
 };
@@ -217,7 +209,7 @@ const createReservation = async (
 ): Promise<createReservationResponse> => {
     try {
 
-        const response = await axios.post(`${BaseUri}api/reserve/${zone}`, reservation, {
+        const response = await axios.post(`${BaseUri}api/zones/reserve/${zone}`, reservation, {
             headers: { Authorization: `Bearer ${token}` },
         });
         return response.data;

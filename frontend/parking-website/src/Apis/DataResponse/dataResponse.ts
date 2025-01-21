@@ -48,11 +48,11 @@ export type updateStatusResponse = {
     update: string
 }
 export type zonePermitOccupiedResponse = {
-    zoneId: 1073741824,
+    zoneId: number,
     status: string
 }
 export type zonePermitFreeResponse = {
-    zoneId: 1073741824,
+    zoneId: number,
     status: string
 }
 export type getReservationResponse = {
@@ -112,4 +112,17 @@ export type createReservationResponse = {
     reservation_Duration:string,
     total_Amount:string,
     userId:number
+}
+
+export type factureReservationResponse = {
+    zoneId:number,
+    status:string,
+    reservation_Time:string,
+    reservation_Duration:string,
+    total_Amount:string,
+    firstName:string,
+    lastName:string,
+    cin:string,
+    email:string,
+    tel:string
 }

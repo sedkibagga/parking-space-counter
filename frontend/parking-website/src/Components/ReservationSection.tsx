@@ -1,20 +1,23 @@
 import React, { useState } from 'react';
-import { TextField, Button, Grid, Box, Typography } from '@mui/material';
+import { TextField, Button, Grid, Box, Typography, Modal } from '@mui/material';
 import { useAuth } from './AuthContexte';
 import { createReservationDto } from '../Apis/DataParam/dataParam';
 import apiService from '../Apis/Services/apisService';
 import { useNavigate } from 'react-router-dom';
+import { createReservationResponse, factureReservationResponse } from '../Apis/DataResponse/dataResponse';
 const ReservationForm: React.FC = () => {
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
     const [numTel, setNumTel] = useState('');
     const [dateReservation, setDateReservation] = useState<string>('');
+    const [facture, setFacture] = useState<factureReservationResponse>({ zoneId: 0, status: "", reservation_Time: "", reservation_Duration: "", total_Amount: "", firstName: "", lastName: "", cin: "", email: "", tel: "" });
     const [heureDebut, setHeureDebut] = useState<string>('');
     const [heureFin, setHeureFin] = useState<string>('');
     const [montant, setMontant] = useState(0);
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
-    const {user , placeClicked} = useAuth();
-    console.log("user:",user);
-    console.log("placeClicked",placeClicked);
+    const [showModal, setShowModal] = useState<boolean>(false);
+    const { user, placeClicked } = useAuth();
+    console.log("user:", user);
+    console.log("placeClicked", placeClicked);
     // Fonction pour valider le numéro de téléphone (doit être composé de 8 chiffres)
     const validateNumTel = (num: string) => {
         return /^[0-9]{8}$/.test(num);
@@ -26,10 +29,6 @@ const ReservationForm: React.FC = () => {
         const newErrors: { [key: string]: string } = {};
 
 
-        if (!numTel || !validateNumTel(numTel)) {
-            newErrors.numTel = 'Le numéro de téléphone est requis et doit être composé de 8 chiffres.';
-            valid = false;
-        }
 
 
         if (!dateReservation) {
@@ -51,7 +50,7 @@ const ReservationForm: React.FC = () => {
         return valid;
     };
 
-  
+
     const calculerMontant = () => {
         if (!validateFields()) return;
 
@@ -64,7 +63,7 @@ const ReservationForm: React.FC = () => {
             return;
         }
 
-       
+
         const heureDebutInt = parseInt(heureDebut.split(':')[0]);
         const heureFinInt = parseInt(heureFin.split(':')[0]);
 
@@ -82,38 +81,57 @@ const ReservationForm: React.FC = () => {
             }));
         }
 
-        
+
         const differenceEnHeures = heureFinInt - heureDebutInt;
         setMontant(differenceEnHeures * 20); // Exemple : 20 unités par heure
     };
-    const handleSubmit = async() => {
+    const handleSubmit = async () => {
         try {
             if (!validateFields()) return;
             const reservationTime = `${dateReservation}T${heureDebut}:00`;
-            console.log("reservationTime",reservationTime);
+            console.log("reservationTime", reservationTime);
             const heureDebutInt = parseInt(heureDebut.split(':')[0]);
             const heureFinInt = parseInt(heureFin.split(':')[0]);
             const reservationDuration = heureFinInt - heureDebutInt;
-            console.log("reservationDuration",reservationDuration);
-            const reservationData:createReservationDto = {
+            console.log("reservationDuration", reservationDuration);
+            const reservationData: createReservationDto = {
                 reservation_Time: reservationTime,
                 reservation_Duration: reservationDuration.toString(),
             };
-    
+
             console.log("Reservation Data:", reservationData);
             if (user?.token) {
                 const response = await apiService.createReservation(reservationData, placeClicked, user.token);
-                console.log("reserved with succ:" , response);
-                navigate('/Home');
+                const fact: factureReservationResponse = {
+                    zoneId: placeClicked,
+                    status: response.status,
+                    reservation_Time: response.reservation_Time,
+                    reservation_Duration: response.reservation_Duration,
+                    total_Amount: response.total_Amount,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    cin: user.cin,
+                    email: user.email,
+                    tel: user.tel
+                }
+                setFacture(fact);
+                console.log("reserved with succ:", response);
+                setShowModal(true);
+                // navigate('/Home');
             } else {
                 console.error('User token is undefined');
             }
-        } catch (error:any) {
+        } catch (error: any) {
             console.log("error:", error.message);
             alert(error.message);
         }
-        
 
+
+    }
+
+    const handlePay = () => {
+        setShowModal(false);
+        navigate('/Payement');
     }
 
     return (
@@ -167,85 +185,85 @@ const ReservationForm: React.FC = () => {
                         }}
                     />
                 </Grid>
-                
+
 
                 {/* Champs de Date, Heure de début et Heure de fin */}
                 <Grid container spacing={2}>
-                <Grid item xs={12} sm={4}>
-                    <TextField
-                        label="Date of Reservation"
-                        type="date"
-                        fullWidth
-                        InputLabelProps={{
-                            shrink: true,
-                        }}
-                        value={dateReservation}
-                        onChange={(e) => setDateReservation(e.target.value)}
-                        error={!!errors.dateReservation}
-                        helperText={errors.dateReservation}
-                        sx={{
-                            "& .MuiInputLabel-root": {
-                                "&.Mui-focused": {
-                                    color: "#050507"
+                    <Grid item xs={12} sm={4}>
+                        <TextField
+                            label="Date of Reservation"
+                            type="date"
+                            fullWidth
+                            InputLabelProps={{
+                                shrink: true,
+                            }}
+                            value={dateReservation}
+                            onChange={(e) => setDateReservation(e.target.value)}
+                            error={!!errors.dateReservation}
+                            helperText={errors.dateReservation}
+                            sx={{
+                                "& .MuiInputLabel-root": {
+                                    "&.Mui-focused": {
+                                        color: "#050507"
+                                    }
+                                },
+                                "& .MuiOutlinedInput-root": {
+                                    borderRadius: "15px",
+                                    "&.Mui-focused fieldset": {
+                                        borderColor: "#050507"
+                                    }
                                 }
-                            },
-                            "& .MuiOutlinedInput-root": {
-                                borderRadius: "15px",
-                                "&.Mui-focused fieldset": {
-                                    borderColor: "#050507"
+                            }}
+                        />
+                    </Grid>
+                    <Grid item xs={12} sm={4}>
+                        <TextField
+                            label="Start time"
+                            type="time"
+                            fullWidth
+                            value={heureDebut}
+                            onChange={(e) => setHeureDebut(e.target.value)}
+                            error={!!errors.heureDebut}
+                            helperText={errors.heureDebut}
+                            sx={{
+                                "& .MuiInputLabel-root": {
+                                    "&.Mui-focused": {
+                                        color: "#050507"
+                                    }
+                                },
+                                "& .MuiOutlinedInput-root": {
+                                    borderRadius: "15px",
+                                    "&.Mui-focused fieldset": {
+                                        borderColor: "#050507"
+                                    }
                                 }
-                            }
-                        }}
-                    />
-                </Grid>
-                <Grid item xs={12} sm={4}>
-                    <TextField
-                        label="Start time"
-                        type="time"
-                        fullWidth
-                        value={heureDebut}
-                        onChange={(e) => setHeureDebut(e.target.value)}
-                        error={!!errors.heureDebut}
-                        helperText={errors.heureDebut}
-                        sx={{
-                            "& .MuiInputLabel-root": {
-                                "&.Mui-focused": {
-                                    color: "#050507"
+                            }}
+                        />
+                    </Grid>
+                    <Grid item xs={12} sm={4}>
+                        <TextField
+                            label="Ending Time"
+                            type="time"
+                            fullWidth
+                            value={heureFin}
+                            onChange={(e) => setHeureFin(e.target.value)}
+                            error={!!errors.heureFin}
+                            helperText={errors.heureFin}
+                            sx={{
+                                "& .MuiInputLabel-root": {
+                                    "&.Mui-focused": {
+                                        color: "#050507"
+                                    }
+                                },
+                                "& .MuiOutlinedInput-root": {
+                                    borderRadius: "15px",
+                                    "&.Mui-focused fieldset": {
+                                        borderColor: "#050507"
+                                    }
                                 }
-                            },
-                            "& .MuiOutlinedInput-root": {
-                                borderRadius: "15px",
-                                "&.Mui-focused fieldset": {
-                                    borderColor: "#050507"
-                                }
-                            }
-                        }}
-                    />
-                </Grid>
-                <Grid item xs={12} sm={4}>
-                    <TextField
-                        label="Ending Time"
-                        type="time"
-                        fullWidth
-                        value={heureFin}
-                        onChange={(e) => setHeureFin(e.target.value)}
-                        error={!!errors.heureFin}
-                        helperText={errors.heureFin}
-                        sx={{
-                            "& .MuiInputLabel-root": {
-                                "&.Mui-focused": {
-                                    color: "#050507"
-                                }
-                            },
-                            "& .MuiOutlinedInput-root": {
-                                borderRadius: "15px",
-                                "&.Mui-focused fieldset": {
-                                    borderColor: "#050507"
-                                }
-                            }
-                        }}
-                    />
-                </Grid>
+                            }}
+                        />
+                    </Grid>
                 </Grid>
 
                 {errors.heure && (
@@ -256,35 +274,15 @@ const ReservationForm: React.FC = () => {
                     </Grid>
                 )}
 
-                <Grid item xs={12}>
-                    <Typography variant="h6" sx={{ textAlign: 'center', color: '#050507' }}>
-                        Amount To Pay: {montant} TND
-                    </Typography>
-                </Grid>
+
 
                 {/* Boutons centrés */}
                 <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center' }}>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={calculerMontant}
-                        sx={{
-                            backgroundColor: '#E3311D',
-                            color: '#fff',
-                            height: '40px',
-                            borderRadius: '15px',
-                            width: '200px',
-                            '&:hover': {
-                                backgroundColor: '#C92A1D',
-                            },
-                            margin: '10px',
-                        }}
-                    >
-                        Calculate Amount
-                    </Button>
+
                     <Button
                         variant="contained"
                         color="secondary"
+                        onClick={handleSubmit}
                         sx={{
                             backgroundColor: '#4CAF50',
                             color: '#fff',
@@ -301,6 +299,54 @@ const ReservationForm: React.FC = () => {
                     </Button>
                 </Grid>
             </Grid>
+            <Modal
+                open={showModal}
+                onClose={() => setShowModal(false)}
+                aria-labelledby="bill-modal-title"
+                aria-describedby="bill-modal-description"
+            >
+                <Box sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    backgroundColor: 'white',
+                    padding: 3,
+                    borderRadius: 2,
+                    boxShadow: 3,
+                    maxWidth: 400,
+                    width: '100%',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                }}>
+                    <Typography id="bill-modal-title" variant="h6" component="h2" sx={{ fontWeight: 'bold', textAlign: 'center' }}>
+                        Invoice Details
+                    </Typography>
+                    <Typography sx={{ mt: 2 }}>
+                        <strong>Reservation Time:</strong> {facture.reservation_Time}
+                    </Typography>
+                    <Typography>
+                        <strong>Duration:</strong> {facture.reservation_Duration} hours
+                    </Typography>
+                    <Typography>
+                        <strong>Total Amount:</strong> {facture.total_Amount} TND
+                    </Typography>
+                    <Typography sx={{ mt: 2 }}>
+                        <strong>Customer:</strong> {facture.firstName} {facture.lastName}
+                    </Typography>
+                    <Typography>
+                        <strong>Email:</strong> {facture.email}
+                    </Typography>
+                    <Typography>
+                        <strong>Phone:</strong> {facture.tel}
+                    </Typography>
+                    <Button onClick={handlePay} >
+                        confirm
+                    </Button>
+                </Box>
+
+            </Modal>
         </Box>
     );
 };

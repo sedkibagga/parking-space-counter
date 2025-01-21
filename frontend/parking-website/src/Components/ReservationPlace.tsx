@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     Box,
     Button,
@@ -11,39 +11,63 @@ import {
 import { motion } from "framer-motion";
 import image from "../assets/image1.png";
 import { useAuth } from "./AuthContexte"; // Importer useAuth
-import { Logout } from "@mui/icons-material";
 import { Link, useNavigate } from "react-router-dom";
+import apiService from "../Apis/Services/apisService";
+import { zonePermitFreeResponse, zonePermitOccupiedResponse } from "../Apis/DataResponse/dataResponse";
 
-// Type pour les places
 interface Place {
-    id: number;
-    status: "Libre" | "Occupé";
+    zoneId: number;
+    status: string;
 }
 
-const initialPlaces: Place[] = Array.from({ length: 12 }, (_, index) => ({
-    id: index + 1,
-    status: index % 3 === 0 ? "Occupé" : "Libre",
-}));
-
 const ReservationPlace: React.FC = () => {
-    const [places, setPlaces] = useState(initialPlaces);
+    const [freePlacesList, setFreePlacesList] = useState<zonePermitFreeResponse[]>([]);
+    const [occupiedPlacesList, setOccupiedPlacesList] = useState<zonePermitOccupiedResponse[]>([]);
     const [popupOpen, setPopupOpen] = useState(false);
-    const { user,setPlaceClicked,placeClicked } = useAuth(); // Utilisation de useAuth pour gérer l'état de connexion
+    const { user, setPlaceClicked, placeClicked } = useAuth(); 
     const navigate = useNavigate();
+
+    // Fetch free places
+    const fetchFreePlaces = async () => {
+        try {
+            const response = await apiService.zonePermitFree();
+            console.log("freePlacesList:", response);
+            setFreePlacesList(response);
+        } catch (error: any) {
+            console.error("Error fetching free places:", error.message);
+        }
+    };
+
+    // Fetch occupied places
+    const fetchOccupiedPlaces = async () => {
+        try {
+            const response = await apiService.zonePermitOccupied();
+            console.log("occupiedPlacesList:", response);
+            setOccupiedPlacesList(response);
+        } catch (error: any) {
+            console.error("Error fetching occupied places:", error.message);
+        }
+    };
+
+    useEffect(() => {
+        fetchFreePlaces();
+        fetchOccupiedPlaces();
+    }, []);
+
     const handlePlaceClick = (place: Place) => {
-        if (place.status === "Libre") {
+        if (place.status === "free") {
             if (!user) {
-                setPlaceClicked(place.id);
-                // L'utilisateur n'est pas connecté, ouvrir la popup pour se connecter
-                setPopupOpen(true);
+                setPlaceClicked(place.zoneId);
+                setPopupOpen(true); 
             } else {
-                setPlaceClicked(place.id);
-                // L'utilisateur est connecté et la place est libre, redirige vers la réservation
+                setPlaceClicked(place.zoneId);
                 navigate("/Reservation/reserveform"); 
             }
         }
     };
-    console.log("Current placeClicked state:", placeClicked); 
+
+    console.log("Current placeClicked state:", placeClicked);
+
     return (
         <Box
             sx={{
@@ -71,6 +95,10 @@ const ReservationPlace: React.FC = () => {
                 />
             </Box>
 
+          
+            <Typography variant="h5" sx={{ marginTop: "30px", marginBottom: "10px" }}>
+                Places Libres
+            </Typography>
             <Box
                 sx={{
                     display: "grid",
@@ -82,9 +110,9 @@ const ReservationPlace: React.FC = () => {
                     maxWidth: "80%",
                 }}
             >
-                {places.map((place) => (
+                {freePlacesList.map((place) => (
                     <motion.div
-                        key={place.id}
+                        key={place.zoneId}
                         whileHover={{ scale: 1.1 }}
                         transition={{ duration: 0.3 }}
                     >
@@ -117,7 +145,7 @@ const ReservationPlace: React.FC = () => {
                                     fontWeight: "bold",
                                 }}
                             >
-                                {place.id}
+                                {place.zoneId}
                             </Typography>
 
                             <Button
@@ -125,14 +153,12 @@ const ReservationPlace: React.FC = () => {
                                 size="small"
                                 onClick={() => handlePlaceClick(place)}
                                 sx={{
-                                    backgroundColor:
-                                        place.status === "Libre" ? "green" : "gray",
+                                    backgroundColor: "green",
                                     color: "white",
                                     borderRadius: "20px",
                                     textTransform: "none",
                                     "&:hover": {
-                                        backgroundColor:
-                                            place.status === "Libre" ? "darkgreen" : "gray",
+                                        backgroundColor: "darkgreen",
                                     },
                                 }}
                             >
@@ -143,6 +169,77 @@ const ReservationPlace: React.FC = () => {
                 ))}
             </Box>
 
+            
+            <Typography variant="h5" sx={{ marginTop: "30px", marginBottom: "10px" }}>
+                Places Occupées
+            </Typography>
+            <Box
+                sx={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(3, 1fr)",
+                    gap: "50px",
+                    justifyContent: "center",
+                    marginLeft: "auto",
+                    marginRight: "auto",
+                    maxWidth: "80%",
+                }}
+            >
+                {occupiedPlacesList.map((place) => (
+                    <motion.div
+                        key={place.zoneId}
+                        whileHover={{ scale: 1.1 }}
+                        transition={{ duration: 0.3 }}
+                    >
+                        <Box
+                            sx={{
+                                backgroundColor: "#E3311D",
+                                borderRadius: "12px",
+                                padding: "12px",
+                                textAlign: "center",
+                                color: "white",
+                                width: "150px",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                flexDirection: "column",
+                            }}
+                        >
+                            <Typography
+                                variant="h6"
+                                sx={{
+                                    display: "inline-flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    borderRadius: "50%",
+                                    width: "40px",
+                                    height: "40px",
+                                    marginBottom: "10px",
+                                    backgroundColor: "white",
+                                    color: "#E3311D",
+                                    fontWeight: "bold",
+                                }}
+                            >
+                                {place.zoneId}
+                            </Typography>
+                            <Button
+                                variant="contained"
+                                size="small"
+                                disabled
+                                sx={{
+                                    backgroundColor: "gray",
+                                    color: "white",
+                                    borderRadius: "20px",
+                                    textTransform: "none",
+                                }}
+                            >
+                                {place.status}
+                            </Button>
+                        </Box>
+                    </motion.div>
+                ))}
+            </Box>
+
+            {/* Login Popup */}
             <Dialog
                 open={popupOpen}
                 onClose={() => setPopupOpen(false)}
@@ -165,7 +262,7 @@ const ReservationPlace: React.FC = () => {
                     >
                         Fermer
                     </Button>
-                    <Link to='/signin'>
+                    <Link to="/signin">
                         <Button
                             variant="contained"
                             sx={{
@@ -173,7 +270,6 @@ const ReservationPlace: React.FC = () => {
                                 color: "white",
                                 "&:hover": { backgroundColor: "#45A049" },
                             }}
-
                         >
                             Se connecter
                         </Button>
