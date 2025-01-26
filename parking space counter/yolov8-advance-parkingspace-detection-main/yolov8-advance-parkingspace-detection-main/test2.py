@@ -6,17 +6,17 @@ from ultralytics import YOLO
 import cvzone
 import requests
 
-# Charger les polygones et les noms de zones
+
 with open("ps", "rb") as f:
     data = pickle.load(f)
     polylines, area_names = data['polylines'], data['area_names']
 
-# Charger les classes COCO
+
 with open("coco.txt", "r") as my_file:
     data = my_file.read()
     class_list = data.split("\n")
 
-# Charger le modèle YOLO
+
 try:
     model = YOLO('yolov8s.pt')
 except Exception as e:
@@ -24,12 +24,12 @@ except Exception as e:
 
 cap = cv2.VideoCapture('easy1.mp4')
 
-# Dictionnaire pour gérer l'état des zones
+
 zone_status = {i+1: 'free' for i in range(len(polylines))}
 
-# Compteur pour la synchronisation périodique
+
 frame_counter = 0
-sync_interval = 300  # Synchronize with server every 300 frames (adjust as needed)
+sync_interval = 300  
 
 def sync_zones_with_server():
     """Synchronise les états des zones avec le serveur Spring Boot."""

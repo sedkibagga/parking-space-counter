@@ -37,7 +37,7 @@ public class ReservationController {
         this.parkingHistoryOfUserRepository = parkingHistoryOfUserRepository;
         this.reservedPlacesRepository = reservedPlacesRepository;
         this.reservationService = reservationService;
-        for (int i = 1; i <=15; i++) {
+        for (int i = 1; i <=7; i++) {
             zones.put(i, new ZoneStatus(i, "free"));
         }
     }
