@@ -31,6 +31,7 @@ const Home = () => {
                 </View>
 
             </View>
+           
         </View>
     )
 }

@@ -3,11 +3,11 @@ import { StyleSheet, Text, View } from 'react-native';
 import './global.css';
 import Home from './component/Home';
 import Services from './component/Services';
+import Login from './component/Login';
 export default function App() {
   return (
     <View className='flex-1 '>
-      <Services />
-      <Text>hi new branch</Text>
+      <Login />
     </View>
   );
 }
