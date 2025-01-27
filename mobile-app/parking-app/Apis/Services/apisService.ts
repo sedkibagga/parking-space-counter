@@ -28,12 +28,13 @@ import {
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const BaseUri = "http://localhost:8080/";
+const BaseUri = "http://192.168.1.2:8080/";
 
 const login = async (data: loginDto, setUser: (user: loginResponse | null) => void): Promise<loginResponse> => {
     try {
         const response = await axios.post(`${BaseUri}api/login`, data);
         const userData: loginResponse = response.data;
+        console.log("userdata: " , userData)
         setUser(userData);
         await AsyncStorage.setItem('userData', JSON.stringify(userData));
         const storedUser = await AsyncStorage.getItem('userData');

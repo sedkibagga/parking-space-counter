@@ -4,7 +4,6 @@ import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import FontAwesome5 from '@expo/vector-icons/build/FontAwesome5';
 import { loginDto } from '../Apis/DataParam/dataParam';
-import axios from 'axios';
 import apiService from '../Apis/Services/apisService';
 import { useMyContext } from '../Context/MyContext';
 const Login = () => {
@@ -18,8 +17,7 @@ const Login = () => {
             const loginParam: loginDto = { email: email, password: password };
             console.log("loginParam: ", loginParam);
             const response = await apiService.login(loginParam, setUser);
-            console.log("response of login :", response);
-
+            console.log("Response from API:", response);
         } catch (error: any) {
             console.log("error:", error.message);
             alert(error.message);
@@ -68,7 +66,7 @@ const Login = () => {
                         size={24}
                         color="black"
                         onPress={() => setSecureText(!secureText)}
-                    />" 
+                    />
                 </View>
 
                 <View className='flex flex-row mt-3 justify-end items-end mx-5'>
