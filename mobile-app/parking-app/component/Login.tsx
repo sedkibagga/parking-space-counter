@@ -1,10 +1,30 @@
 import { View, Text, Image, TextInput, Button } from 'react-native';
-import React from 'react';
+import React, { useState } from 'react';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import FontAwesome5 from '@expo/vector-icons/build/FontAwesome5';
-
+import { loginDto } from '../Apis/DataParam/dataParam';
+import axios from 'axios';
+import apiService from '../Apis/Services/apisService';
+import { useMyContext } from '../Context/MyContext';
 const Login = () => {
+    const { setUser } = useMyContext();
+    const [email, setEmail] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
+    const [secureText, setSecureText] = useState<boolean>(true);
+
+    const handleLogin = async () => {
+        try {
+            const loginParam: loginDto = { email: email, password: password };
+            console.log("loginParam: ", loginParam);
+            const response = await apiService.login(loginParam, setUser);
+            console.log("response of login :", response);
+
+        } catch (error: any) {
+            console.log("error:", error.message);
+            alert(error.message);
+        }
+    }
     return (
         <View className="flex flex-col bg-black h-full">
 
@@ -30,6 +50,7 @@ const Login = () => {
                     placeholderTextColor="gray"
                     placeholder="Email"
                     className="bg-white mb-5 h-12 px-4 ml-5 mr-5 rounded-md"
+                    onChange={(e) => setEmail(e.nativeEvent.text)}
                 />
 
 
@@ -37,10 +58,17 @@ const Login = () => {
                     <TextInput
                         placeholderTextColor="gray"
                         placeholder="Password"
-                        secureTextEntry
+                        secureTextEntry={secureText}
                         className="flex-1 text-black"
+                        onChange={(e) => setPassword(e.nativeEvent.text)}
                     />
-                    <FontAwesome name="eye" size={24} color="black" />
+
+                    <FontAwesome
+                        name={secureText ? "eye-slash" : "eye"}
+                        size={24}
+                        color="black"
+                        onPress={() => setSecureText(!secureText)}
+                    />" 
                 </View>
 
                 <View className='flex flex-row mt-3 justify-end items-end mx-5'>
@@ -48,7 +76,7 @@ const Login = () => {
                 </View>
 
                 <View className='flex flex-row items-center justify-center mt-10 bg-orange-600 mx-5 rounded-md '>
-                    <Button title='Login' color='black'></Button>
+                    <Button title='Login' color='black' onPress={handleLogin}></Button>
                 </View>
                 <View className="flex flex-row justify-between items-center mt-5 mx-5">
                     <Text className="text-white flex-1 text-center">------------------</Text>
@@ -61,19 +89,19 @@ const Login = () => {
                         <FontAwesome5 name="facebook" size={40} color="white" />
                     </View>
                     <View className='mr-5'>
-                    <FontAwesome5 name="google" size={40} color="white" />
+                        <FontAwesome5 name="google" size={40} color="white" />
                     </View>
                     <View>
-                    <FontAwesome5 name="github" size={40} color="white" />
+                        <FontAwesome5 name="github" size={40} color="white" />
                     </View>
                 </View>
                 <View className='flex flex-row justify-center items-center mt-5'>
-                   <Text className='text text-white mr-5'>
-                       Don't have an account ? 
-                   </Text> 
-                   <Text className='text text-white  text-bold'>
-                         Sign Up
-                   </Text> 
+                    <Text className='text text-white mr-5'>
+                        Don't have an account ?
+                    </Text>
+                    <Text className='text text-white  text-bold'>
+                        Sign Up
+                    </Text>
                 </View>
             </View>
         </View>
