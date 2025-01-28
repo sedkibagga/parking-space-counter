@@ -1,10 +1,11 @@
-import { View, Text, ScrollView, Image } from 'react-native'
+import { View, Text, ScrollView, Image, Pressable } from 'react-native'
 import React from 'react'
 import '../global.css'
 import AntDesign from '@expo/vector-icons/AntDesign'
 import ProcessCard from './ProcessCard'
 import { ProcessCardProps } from '../Types/DataTypes'
 import { StyleSheet } from 'react-native'
+import { router } from 'expo-router'
 const Services = () => {
     const processTypes: ProcessCardProps[] = [
         {
@@ -33,9 +34,11 @@ const Services = () => {
     }
 
     const processChunks = chunkArray(processTypes, 2)
-
+     
+    
     return (
         <ScrollView className="bg-black h-full" contentContainerStyle={styles.contentContainer}>
+            
             <View className='flex flex-row items-center justify-center mt-20'>
                 <Text className='text font-bold text-white text-5xl'>Services</Text>
             </View>
@@ -104,10 +107,8 @@ const Services = () => {
                         />
                     ))}
                 </View>
-            ))}
-            <View className='flex flex-row items-center justify-center mt-5 p-3'>
-                <Text className='text-white text-bold text-3xl'>Go Back</Text>
-            </View>
+            ))} 
+           
             {/* <View className='flex flex-col items-center justify-center bg-green-500'>
                 <Image
                     source={require('../assets/Capture2.png')}

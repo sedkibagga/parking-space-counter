@@ -7,7 +7,8 @@ interface MyContextType {
      setUser: (user: loginResponse | null) => void;
      placeClicked:number;
      setPlaceClicked: (placeClicked:number|0) => void ;
-
+     showReservationModal:boolean;
+     setShowReservationModal: (showReservationModal:boolean) => void;
 }
 
 export const MyContext = createContext<MyContextType | undefined>(undefined);
@@ -15,6 +16,7 @@ export const MyContext = createContext<MyContextType | undefined>(undefined);
 export const MyContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<loginResponse | null>(null);
     const [placeClicked , setPlaceClicked] = useState<number>(0);
+    const [showReservationModal,setShowReservationModal] = useState<boolean>(false);
     useEffect(() => {
         const loadUser = async () => {
             try {
@@ -30,7 +32,7 @@ export const MyContextProvider: React.FC<{ children: ReactNode }> = ({ children 
     }, []);
 
     return (
-        <MyContext.Provider value={{ user,setUser,placeClicked,setPlaceClicked }}>
+        <MyContext.Provider value={{ user,setUser,placeClicked,setPlaceClicked , showReservationModal , setShowReservationModal }}>
             {children}
         </MyContext.Provider>
     );

@@ -6,6 +6,7 @@ import FontAwesome5 from '@expo/vector-icons/build/FontAwesome5';
 import { loginDto } from '../Apis/DataParam/dataParam';
 import apiService from '../Apis/Services/apisService';
 import { useMyContext } from '../Context/MyContext';
+import { router } from 'expo-router';
 const Login = () => {
     const { setUser } = useMyContext();
     const [email, setEmail] = useState<string>('');
@@ -18,6 +19,7 @@ const Login = () => {
             console.log("loginParam: ", loginParam);
             const response = await apiService.login(loginParam, setUser);
             console.log("Response from API:", response);
+            router.push("/(tabs)");
         } catch (error: any) {
             console.log("error:", error.message);
             alert(error.message);
