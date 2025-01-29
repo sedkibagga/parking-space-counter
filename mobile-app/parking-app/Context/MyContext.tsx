@@ -9,6 +9,7 @@ interface MyContextType {
      setPlaceClicked: (placeClicked:number|0) => void ;
      showReservationModal:boolean;
      setShowReservationModal: (showReservationModal:boolean) => void;
+     
 }
 
 export const MyContext = createContext<MyContextType | undefined>(undefined);

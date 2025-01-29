@@ -5,9 +5,10 @@ import { zonePermitFreeResponse } from '../Apis/DataResponse/dataResponse'
 import { useMyContext } from '../Context/MyContext'
  
 const ReservationCard = ({ place }: { place: zonePermitFreeResponse }) => {
-    const {setShowReservationModal} = useMyContext();
+    const {setShowReservationModal,setPlaceClicked} = useMyContext();
     const handleLongPress = (placeStatus:string) => {
         if (placeStatus==="free") {
+            setPlaceClicked(place.zoneId);
             setShowReservationModal(true);
         }
     }
