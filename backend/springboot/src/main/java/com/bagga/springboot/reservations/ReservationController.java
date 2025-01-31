@@ -8,8 +8,10 @@ import com.bagga.springboot.repositories.ParkingHistoryOfUserRepository;
 import com.bagga.springboot.repositories.ReservedPlacesRepository;
 import com.bagga.springboot.repositories.UserRepository;
 import com.bagga.springboot.reservations.dtos.CreateReservationDto;
+import com.bagga.springboot.reservations.dtos.GetFactureDto;
 import com.bagga.springboot.reservations.responses.*;
 import com.bagga.springboot.reservations.zoneStatus.ZoneStatus;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -188,6 +190,28 @@ public class ReservationController {
                 .reservation_Duration(reservedPlaces.getReservation_Duration())
                 .total_Amount(reservedPlaces.getTotal_Amount())
                 .userId(user.getId())
+                .build();
+    }
+
+    @PostMapping("/getFacture")
+    public GetFactureResponse getFacture(@RequestBody GetFactureDto getFactureDto, HttpServletRequest request) {
+        log.info("Received request payload: {}", getFactureDto); // Log the incoming payload
+        log.info("Authorization header: {}", request.getHeader("Authorization")); // Log the Authorization header
+
+        double pricePerHour = 10.0;
+        int reservationDuration;
+        try {
+            reservationDuration = Integer.parseInt(getFactureDto.getReservation_Duration());
+        } catch (NumberFormatException e) {
+            log.error("Invalid reservation duration format: {}", getFactureDto.getReservation_Duration(), e);
+            throw new IllegalArgumentException("Invalid reservation duration format.");
+        }
+        double totalAmount = reservationDuration * pricePerHour;
+        return GetFactureResponse.builder()
+                .zoneId(getFactureDto.getZoneId())
+                .reservation_Duration(getFactureDto.getReservation_Duration())
+                .reservation_Time(getFactureDto.getReservation_Time())
+                .total_Amount(String.format("%.2f", totalAmount))
                 .build();
     }
 

@@ -7,13 +7,10 @@ const TabsLayout = () => {
     <Tabs>
       <Tabs.Screen name="index" options={{
         title: 'Reservation',
-        headerShown:false,
+        headerShown: false,
         tabBarBackground: () => <View className='bg-black h-full' />
       }} />
-      <Tabs.Screen name="users/[id]" options={{
-        title: 'User',
-        headerShown:false
-      }} />
+      <Tabs.Screen name='settings/Settings' options={{ headerShown: false, title: 'Settings', tabBarBackground: () => <View className='bg-black h-full' /> }} />
     </Tabs>
   )
 }

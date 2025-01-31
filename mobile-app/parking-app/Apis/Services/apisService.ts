@@ -7,6 +7,7 @@ import {
     updateStatusDto,
     zonePermitOccupiedDto,
     createReservationDto,
+    createFactureDto,
 }
     from '../DataParam/dataParam';
 import {
@@ -24,6 +25,7 @@ import {
     deleteHistoryParkingByIdResponse,
     User,
     createReservationResponse,
+    CreateFactureResponse,
 } from "../DataResponse/dataResponse";
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -44,6 +46,7 @@ const login = async (data: loginDto, setUser: (user: loginResponse | null) => vo
         throw new Error(error.response?.data?.message || "Login failed");
     }
 };
+ 
 
 const createClient = async (
     data: createClientDto,
@@ -82,6 +85,21 @@ const updateUserCar = async (
         return response.data;
     } catch (error: any) {
         throw new Error(error.response?.data?.message || "Updating user car failed");
+    }
+};
+
+const createFacture = async (
+    data: createFactureDto,
+    token: string
+    
+): Promise<CreateFactureResponse> => {
+    try {
+        const response = await axios.post(`${BaseUri}api/zones/getFacture`, data, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        return response.data;
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message || "Creating facture failed");
     }
 };
 
@@ -237,7 +255,8 @@ const apiService = {
     getParkingHistoryByUserId,
     deleteReservation,
     deleteParkingHistory,
-    createReservation
+    createReservation,
+    createFacture
 };
 
 export default apiService;

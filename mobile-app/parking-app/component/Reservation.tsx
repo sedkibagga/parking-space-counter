@@ -5,7 +5,7 @@ import { factureReservationResponse, zonePermitFreeResponse, zonePermitOccupiedR
 import apiService from '../Apis/Services/apisService';
 import ReservationCard from './ReservationCard';
 import { useMyContext } from '../Context/MyContext';
-import { createReservationDto } from '../Apis/DataParam/dataParam';
+import { createFactureDto, createReservationDto } from '../Apis/DataParam/dataParam';
 import { goBack } from 'expo-router/build/global-state/routing';
 import Entypo from '@expo/vector-icons/build/Entypo';
 import FontAwesome5 from '@expo/vector-icons/build/FontAwesome5';
@@ -17,12 +17,14 @@ const Reservation = () => {
     const [reservationDate, setReservationDate] = useState<string>('');
     const [startTime, setStartTime] = useState<string>('');
     const [endingTime, setEndingTime] = useState<string>('');
-    const [facture, setFacture] = useState<factureReservationResponse>({ zoneId: 0, status: "", reservation_Time: "", reservation_Duration: "", total_Amount: "", firstName: "", lastName: "", cin: "", email: "", tel: "" });
+    const [facture, setFacture] = useState<factureReservationResponse>({ zoneId: 0,  reservation_Time: "", reservation_Duration: "", total_Amount: "", firstName: "", lastName: "", cin: "", email: "", tel: "" });
     const [showFactureModal, setShowFactureModal] = useState<boolean>(false);
-
-    console.warn("startTime:", startTime);
-    console.warn("endingTime:", endingTime);
-    console.warn("placeClicked:", placeClicked);
+    const [totalFacture,setTotalFacture] = useState<number>(0);
+    const [totalfactureToString , setTotalFactureToString] = useState<string>('');
+    const [cardNumber , setCardNumber] = useState<string>('') ;
+    const [month , setMonth] = useState<string>('') ;
+    const [cvc , setCvc] = useState<string>('');
+ 
     const fetchFreePlaces = async () => {
         try {
             const response = await apiService.zonePermitFree();
@@ -71,55 +73,38 @@ const Reservation = () => {
         setReservationDate(formattedText);
     };
 
-    // const validateTime = (time: string) => {
-    //     const timeRegex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
-    //     return timeRegex.test(time);
-    // };
 
-    // const handleStartTimeChange = (text: string) => {
-    //     if (validateTime(text)) {
-    //         setStartTime(text);
-    //     } else {
-    //         console.error("Invalid start time format");
-    //     }
-    // };
+   
+   
 
-    // const handleEndingTimeChange = (text: string) => {
-    //     if (validateTime(text)) {
-    //         setEndingTime(text);
-    //     } else {
-    //         console.error("Invalid ending time format");
-    //     }
-    // };
-
-    const handleReservationSubmit = () => {
-        // if (validateTime(startTime) && validateTime(endingTime)) {
-        //     console.log("Reservation submitted with start time:", startTime, "and ending time:", endingTime);
-        // } else {
-        //     console.error("Invalid time inputs");
-        // }
-    };
-    console.warn("reservationTime", reservationDate);
-    const handleSubmit = async () => {
+    const handleCreateFacture = async () => {
         try {
-            const reservationTime = `${reservationDate}T${startTime}:00`;
-            console.warn("reservationTime", reservationTime);
+            const [day, month, year] = reservationDate.split('/');
+            const formattedReservationDate = `${year}-${month}-${day}`;
+    
+            const reservationTime = `${formattedReservationDate}T${startTime}:00`;
+            console.warn("Formatted reservationTime:", reservationTime);
+    
             const heureDebutInt = parseInt(startTime.split(':')[0]);
             const heureFinInt = parseInt(endingTime.split(':')[0]);
             const reservationDuration = heureFinInt - heureDebutInt;
-            console.log("reservationDuration", reservationDuration);
-            const reservationData: createReservationDto = {
+            console.log("reservationDuration:", reservationDuration);
+    
+            const createFactureDto: createFactureDto = {
+                zoneId: placeClicked,
                 reservation_Time: reservationTime,
                 reservation_Duration: reservationDuration.toString(),
             };
-
-            console.warn("Reservation Data:", reservationData);
+    
+            console.warn("createFactureDto:", createFactureDto);
+    
             if (user?.token) {
-                console.warn("user.token", user.token);
-                const response = await apiService.createReservation(reservationData, placeClicked, user.token);
+                console.warn("User token:", user.token);
+                const response = await apiService.createFacture(createFactureDto, user.token);
+                console.log("API Response:", response);
+    
                 const fact: factureReservationResponse = {
                     zoneId: placeClicked,
-                    status: response.status,
                     reservation_Time: response.reservation_Time,
                     reservation_Duration: response.reservation_Duration,
                     total_Amount: response.total_Amount,
@@ -127,13 +112,70 @@ const Reservation = () => {
                     lastName: user.lastName,
                     cin: user.cin,
                     email: user.email,
-                    tel: user.tel
-                }
+                    tel: user.tel,
+                };
+    
                 setFacture(fact);
-                console.warn("reserved with succ:", response);
+                console.warn("Facture:", fact);
                 setShowReservationModal(false);
                 setShowFactureModal(true);
-
+            } else {
+                console.warn("Error: No user logged in or token missing");
+                alert("No user logged in or token missing");
+            }
+        } catch (error: any) {
+            console.error("Error in handleCreateFacture:", error.message);
+            alert("Failed to create facture. Please try again.");
+        }
+    };
+    const handleSubmit = async () => {
+        try {
+            const reservationTime = `${reservationDate}T${startTime}:00`;
+            console.warn("reservationTime", reservationTime);
+    
+            const heureDebutInt = parseInt(startTime.split(':')[0]);
+            const heureFinInt = parseInt(endingTime.split(':')[0]);
+            const reservationDuration = heureFinInt - heureDebutInt;
+            console.log("reservationDuration", reservationDuration);
+    
+            const reservationData: createReservationDto = {
+                reservation_Time: reservationTime,
+                reservation_Duration: reservationDuration.toString(),
+            };
+    
+            console.warn("Reservation Data:", reservationData);
+    
+            if (user?.token) {
+                console.warn("user.token", user.token);
+    
+                console.warn("Card Number Validation:", isValidCardNumber(cardNumber));
+                if (!isValidCardNumber(cardNumber)) {
+                    alert('Invalid card number');
+                    return;
+                }
+    
+                console.warn("Expiry Date Validation:", isValidExpiryDate(month));
+                if (!isValidExpiryDate(month)) {
+                    alert('Invalid expiry date');
+                    return;
+                }
+    
+                // Debug CVC validation
+                console.warn("CVC Validation:", isValidCvc(cvc));
+                if (!isValidCvc(cvc)) {
+                    alert('Invalid CVC');
+                    return;
+                }
+    
+                const response = await apiService.createReservation(reservationData, placeClicked, user.token);
+                console.warn("reserved with succ:", response);
+                setCardNumber('');
+                setCvc('');
+                setMonth('');
+                fetchFreePlaces();
+                fetchOccupiedPlaces();
+                setShowFactureModal(false);
+                setShowReservationModal(false);
             } else {
                 console.warn('User token is undefined');
             }
@@ -141,17 +183,73 @@ const Reservation = () => {
             console.log("error:", error.message);
             alert(error.message);
         }
+    };
 
 
-    }
-
-    const handleConfirmFacture = () => {
-
-    }
+    const convertTotalAmount = (amount: string): number => {
+        const amountToNumber = Number(amount);
+        if (isNaN(amountToNumber)) {
+            console.error("Invalid amount:", amount);
+            return 0; 
+        }
+        return amountToNumber + 2; 
+    };
+    
+    useEffect(() => {
+        if (showFactureModal) {
+            const totalAmount = convertTotalAmount(facture.total_Amount.split(',')[0]);
+            setTotalFacture(totalAmount);
+            const formattedTotal = totalAmount.toFixed(2).replace('.', ',');
+            setTotalFactureToString(formattedTotal);
+        }
+    }, [showFactureModal, facture.total_Amount]);
     useEffect(() => {
         fetchFreePlaces();
         fetchOccupiedPlaces();
-    }, []);
+    }, []); 
+
+    const isValidCardNumber = (number: string): boolean => {
+        const cleanedCardNumber = number.replace(/\D/g, ''); 
+        return cleanedCardNumber.length >= 13 && cleanedCardNumber.length <= 19;
+    };
+    const isValidExpiryDate = (expiry: string): boolean => {
+        if (!expiry || !expiry.includes('/')) {
+            return false; 
+        }
+    
+        const [month, year] = expiry.split('/');
+        if (!month || !year || month.length !== 2 || year.length !== 2) {
+            return false; 
+        }
+    
+        const currentYear = new Date().getFullYear() % 100; 
+        const currentMonth = new Date().getMonth() + 1;        
+     
+        const expiryMonth = parseInt(month, 10);
+        const expiryYear = parseInt(year, 10);
+        console.log("expiryYear:", expiryYear);
+        console.log("expiryMonth:", expiryMonth);
+        if (isNaN(expiryMonth) || isNaN(expiryYear)) {
+            return false; 
+        }
+    
+        if (expiryMonth < 1 || expiryMonth > 12) {
+            return false; 
+        }
+    
+        if (expiryYear < currentYear || (expiryYear === currentYear && expiryMonth < currentMonth)) {
+            return false; 
+        }
+    
+        return true;
+    };
+    
+    const isValidCvc = (cvc: string): boolean => {
+        const cleanedCvc = cvc.replace(/\D/g, ''); 
+        return cleanedCvc.length === 3 || cleanedCvc.length === 4;
+    };
+    
+       
     return (
         <View className='bg-black h-full flex flex-col'>
             <View className='flex flex-col justify-center items-center h-1/6 mt-5'>
@@ -168,7 +266,7 @@ const Reservation = () => {
             </View>
 
             <View className='flex flex-col h-1/2'>
-                <View className='flex flex-row justify-center items-center'>
+                 <View className='flex flex-row justify-center items-center'>
                     <Text className='text-white text-xl mt-2'>
                         Places Libres
                     </Text>
@@ -243,7 +341,7 @@ const Reservation = () => {
                         </View>
                         <View className='flex flex-row items-center justify-center mt-5'>
                             <Pressable
-                                onPress={handleSubmit}
+                                onPress={handleCreateFacture}
                                 className='bg-blue-500 p-3 rounded-lg'
                             >
                                 <Text className='text-white text-xl'>Submit Reservation</Text>
@@ -264,15 +362,18 @@ const Reservation = () => {
                         </View>
 
                         <View className='flex flex-row items-start justify-start ml-5 mt-3'>
-                            <Text className='text-white text-xl'>May 14, 2022 /no 456485</Text>
+                            <Text className='text-white text-xl'>From: Car Park</Text>
                         </View>
 
                         <View className='flex flex-row items-start justify-start ml-5 mt-3'>
-                            <Text className='text-white text-xl'>To: Alex Bets</Text>
+                            <Text className='text-white text-xl'>To: {user?.firstName} {user?.lastName}</Text>
+                        </View>
+                        <View className='flex flex-row items-start justify-start ml-5 mt-3'>
+                            <Text className='text-white text-xl'>Cin: {user?.cin}</Text>
                         </View>
 
                         <View className='flex flex-row items-start justify-start ml-5 mt-3'>
-                            <Text className='text-white text-xl'>Mail: sedkibagga4@gmail.com</Text>
+                            <Text className='text-white text-xl'>Mail: {user?.email}</Text>
                         </View>
 
                         <View className='flex flex-row w-full mt-3'>
@@ -281,17 +382,21 @@ const Reservation = () => {
 
                         <View className='flex flex-row justify-between mt-3'>
                             <Text className='text-white text-xl ml-5'>Hour Price</Text>
-                            <Text className='text-white text-xl mr-3'>$10.00</Text>
+                            <Text className='text-white text-xl mr-3'>10.00 DT</Text>
+                        </View>
+                        <View className='flex flex-row justify-between mt-3'>
+                            <Text className='text-white text-xl ml-5'>Zone place</Text>
+                            <Text className='text-white text-xl mr-3'>{facture?.zoneId}</Text>
                         </View>
 
                         <View className='flex flex-row justify-between mt-3'>
                             <Text className='text-white text-xl ml-5'>ReservationTime</Text>
-                            <Text className='text-white text-xl mr-3'>2025-10-20T13:00:00</Text>
+                            <Text className='text-white text-xl mr-3'>{facture.reservation_Time}</Text>
                         </View>
 
                         <View className='flex flex-row justify-between mt-3'>
                             <Text className='text-white text-xl ml-5'>Duration</Text>
-                            <Text className='text-white text-xl mr-3'>3</Text>
+                            <Text className='text-white text-xl mr-3'>{facture.reservation_Duration}</Text>
                         </View>
 
                         <View className='flex flex-row w-full mt-3'>
@@ -300,12 +405,12 @@ const Reservation = () => {
 
                         <View className='flex flex-row justify-between mt-3'>
                             <Text className='text-white text-xl ml-5'>Amount</Text>
-                            <Text className='text-white text-xl mr-3'>$30.00</Text>
+                            <Text className='text-white text-xl mr-3'>{facture.total_Amount} DT</Text>
                         </View>
 
                         <View className='flex flex-row justify-between mt-3'>
                             <Text className='text-white text-xl ml-5'>Tax</Text>
-                            <Text className='text-white text-xl mr-3'>$2.00</Text>
+                            <Text className='text-white text-xl mr-3'>2.00 DT</Text>
                         </View>
 
                         <View className='flex flex-row w-full mt-3'>
@@ -314,7 +419,7 @@ const Reservation = () => {
 
                         <View className='flex flex-row justify-between mt-3'>
                             <Text className='text-white text-2xl ml-5'>Total</Text>
-                            <Text className='text-white text-2xl mr-3'>$32.00</Text>
+                            <Text className='text-white text-2xl mr-3'>{totalfactureToString} DT</Text>
                         </View>
 
                         <View className='flex flex-row w-full mt-3'>
@@ -338,6 +443,8 @@ const Reservation = () => {
                                 <TextInput
                                     placeholder='Card Number'
                                     className='bg-white p-2 rounded-lg pl-3 pr-10'
+                                    keyboardType='numeric' 
+                                    onChangeText={(e) => setCardNumber(e.valueOf())}
                                 />
                                 <View className='absolute right-3 top-1/2 transform -translate-y-1/2'>
                                     <FontAwesome5 name="cc-visa" size={24} color="black" />
@@ -347,14 +454,14 @@ const Reservation = () => {
 
                         <View className='flex flex-row w-full mt-3'>
                             <View className='flex flex-row w-1/2'>
-                                <TextInput placeholder='MM/YY' className='bg-white p-2 rounded-lg pl-3 pr-10 w-full' />
+                                <TextInput placeholder='MM/YY' className='bg-white p-2 rounded-lg pl-3 pr-10 w-full'  onChangeText={(e) => setMonth(e.valueOf())} />
                             </View>
                             <View className='flex flex-row w-1/3 ml-5'>
-                                <TextInput placeholder='CVC' className='bg-white p-2 rounded-lg pl-3 pr-10 w-full' />
+                                <TextInput placeholder='CVC' className='bg-white p-2 rounded-lg pl-3 pr-10 w-full' keyboardType='numeric' onChangeText={(e) => setCvc(e.valueOf())} />
                             </View>
                         </View>
                         <View className='flex flex-row items-center justify-center mt-5'>
-                            <Button title='Pay' onPress={handleGoBackFromFactureModal} color="white" />
+                            <Button title='Pay' onPress={handleSubmit} color="white" />
                         </View>
                     </ScrollView>
                 </KeyboardAvoidingView>

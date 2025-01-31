@@ -116,7 +116,7 @@ export type createReservationResponse = {
 
 export type factureReservationResponse = {
     zoneId:number,
-    status:string,
+    // status:string,
     reservation_Time:string,
     reservation_Duration:string,
     total_Amount:string,
@@ -124,5 +124,13 @@ export type factureReservationResponse = {
     lastName:string,
     cin:string,
     email:string,
-    tel:string
-}
+    tel:string 
+    
+} 
+
+ export type CreateFactureResponse = {
+    zoneId:number,
+    reservation_Time:string,
+    reservation_Duration:string,
+    total_Amount:string,
+ }
