@@ -11,6 +11,7 @@ const TabsLayout = () => {
         tabBarBackground: () => <View className='bg-black h-full' />
       }} />
       <Tabs.Screen name='settings/Settings' options={{ headerShown: false, title: 'Settings', tabBarBackground: () => <View className='bg-black h-full' /> }} />
+      <Tabs.Screen name='maps/Maps' options={{ headerShown: false, title: 'Maps', tabBarBackground: () => <View className='bg-black h-full' /> }} />
     </Tabs>
   )
 }

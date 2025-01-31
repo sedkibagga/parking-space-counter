@@ -3,12 +3,15 @@ import React from 'react';
 import '../../../global.css';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import { FontAwesome } from '@expo/vector-icons';
+import { useMyContext } from '../../../Context/MyContext';
 
 const Settings = () => {
   const { width, height } = Dimensions.get('window');
-
+  const {user} = useMyContext();
   const iconSize = width * 0.08;
+  const onAddIconClick = () => {
 
+  }
   return (
      <KeyboardAvoidingView
                         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -24,7 +27,7 @@ const Settings = () => {
           />
 
           <View className="absolute bottom-2 right-2 bg-white rounded-full">
-            <AntDesign name="pluscircle" size={iconSize} color="blue" />
+            <AntDesign name="pluscircle" size={iconSize} color="blue" onPress={onAddIconClick} />
           </View>
         </View>
       </View>
@@ -40,6 +43,7 @@ const Settings = () => {
           placeholderTextColor="gray"
           placeholder="FirstName"
           className="flex-1 text-black"
+          value={user?.firstName}
 
         />
 
@@ -56,6 +60,7 @@ const Settings = () => {
           placeholderTextColor="gray"
           placeholder="LastName"
           className="flex-1 text-black"
+          value={user?.lastName}
 
         />
 
@@ -72,6 +77,7 @@ const Settings = () => {
           placeholderTextColor="gray"
           placeholder="FirstName"
           className="flex-1 text-black"
+          value={user?.email}
 
         />
 
@@ -88,6 +94,7 @@ const Settings = () => {
           placeholderTextColor="gray"
           placeholder="Phone Number"
           className="flex-1 text-black"
+          value={user?.tel}
 
         />
 
@@ -104,7 +111,7 @@ const Settings = () => {
           placeholderTextColor="gray"
           placeholder="Password"
           className="flex-1 text-black"
-
+          value='....................'
         />
 
         <AntDesign name="edit" size={24} color="black" />
