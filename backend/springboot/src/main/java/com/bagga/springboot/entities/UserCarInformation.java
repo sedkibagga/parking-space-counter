@@ -23,6 +23,7 @@ public class UserCarInformation {
 
     private String Color ;
 
+    private  String imageUri ;
     @ManyToOne
     @JoinColumn(name = "user_id")
     @JsonBackReference

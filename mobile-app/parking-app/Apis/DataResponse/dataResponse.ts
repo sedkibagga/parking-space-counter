@@ -1,11 +1,11 @@
 export type User = {
-    id:number,
-    token:string
+    id: number,
+    token: string
 }
 
 
 export type loginResponse = {
-    id:number
+    id: number
     token: string,
     firstName: string,
     lastName: string,
@@ -106,31 +106,50 @@ export type deleteHistoryParkingByIdResponse = {
 }
 
 export type createReservationResponse = {
-    zoneId:number,
-    status:string,
-    reservation_Time:string,
-    reservation_Duration:string,
-    total_Amount:string,
-    userId:number
+    zoneId: number,
+    status: string,
+    reservation_Time: string,
+    reservation_Duration: string,
+    total_Amount: string,
+    userId: number
 }
 
 export type factureReservationResponse = {
-    zoneId:number,
+    zoneId: number,
     // status:string,
-    reservation_Time:string,
-    reservation_Duration:string,
-    total_Amount:string,
-    firstName:string,
-    lastName:string,
-    cin:string,
-    email:string,
-    tel:string 
-    
-} 
+    reservation_Time: string,
+    reservation_Duration: string,
+    total_Amount: string,
+    firstName: string,
+    lastName: string,
+    cin: string,
+    email: string,
+    tel: string
 
- export type CreateFactureResponse = {
-    zoneId:number,
-    reservation_Time:string,
-    reservation_Duration:string,
-    total_Amount:string,
- }
+}
+
+export type CreateFactureResponse = {
+    zoneId: number,
+    reservation_Time: string,
+    reservation_Duration: string,
+    total_Amount: string,
+}
+
+export type getUserInformationResponse = {
+    id: number,
+    registrationNumber: string;
+    model: string,
+    color: string,
+    imageUri: string,
+    userId: number
+
+}
+
+export type updateUserCarInformationResponse = {
+    id: number,
+    registrationNumber: string;
+    model: string,
+    color: string,
+    imageUri: string,
+    userId: number
+}

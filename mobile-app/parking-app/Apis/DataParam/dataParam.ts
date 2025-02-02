@@ -54,13 +54,21 @@ export type deleteHistoryParkingByIdDto = {
 }
 
 export type createReservationDto = {
-    reservation_Time:string,
-    reservation_Duration:string
-} 
+    reservation_Time: string,
+    reservation_Duration: string
+}
 
 
 export type createFactureDto = {
-    zoneId:number,
-    reservation_Time:string,
-    reservation_Duration:string,
+    zoneId: number,
+    reservation_Time: string,
+    reservation_Duration: string,
+}
+
+export type updateUserCarInformationDto = {
+    registrationNumber: string,
+    model: string,
+    color: string,
+    imageUri: string
+
 }

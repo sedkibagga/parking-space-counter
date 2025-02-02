@@ -8,6 +8,7 @@ import {
     zonePermitOccupiedDto,
     createReservationDto,
     createFactureDto,
+    updateUserCarInformationDto,
 }
     from '../DataParam/dataParam';
 import {
@@ -26,11 +27,14 @@ import {
     User,
     createReservationResponse,
     CreateFactureResponse,
+    getUserInformationResponse,
+    updateUserCarInformationResponse,
 } from "../DataResponse/dataResponse";
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
-const BaseUri = "http://192.168.0.127:8080/";
+const BaseUri = "http://172.20.10.6:8080/";
 
 const login = async (data: loginDto, setUser: (user: loginResponse | null) => void): Promise<loginResponse> => {
     try {
@@ -47,6 +51,7 @@ const login = async (data: loginDto, setUser: (user: loginResponse | null) => vo
     }
 };
  
+
 
 const createClient = async (
     data: createClientDto,
@@ -87,6 +92,22 @@ const updateUserCar = async (
         throw new Error(error.response?.data?.message || "Updating user car failed");
     }
 };
+
+const updateUserCarInformation = async (
+  token: string,
+  updateUserCarInformationDto: updateUserCarInformationDto,
+  userId:number
+):Promise<updateUserCarInformationResponse> =>{
+    try {
+        const response = await axios.patch(`${BaseUri}api/user/updateUserCarInformation/${userId}`, updateUserCarInformationDto, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        return response.data;
+    } catch (error:any) {
+        throw new Error(error.response?.data?.message || "Updating user car failed");
+    }
+
+}
 
 const createFacture = async (
     data: createFactureDto,
@@ -157,6 +178,22 @@ const getReservation = async (
         );
     }
 };
+
+const getUserCarInformation = async (
+    token:string,
+    userId:number
+) : Promise<getUserInformationResponse> => {
+   try {
+    const response = await axios.get(`${BaseUri}api/user/getUserCarInformation/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data;
+   } catch(error:any) {
+    throw new Error (
+        error.response?.data?.message || "error of getting userCar Information"
+    )
+   }
+}
 
 const getReservationByUserId = async (
     userId: string,
@@ -256,7 +293,9 @@ const apiService = {
     deleteReservation,
     deleteParkingHistory,
     createReservation,
-    createFacture
+    createFacture,
+    getUserCarInformation,
+    updateUserCarInformation
 };
 
 export default apiService;

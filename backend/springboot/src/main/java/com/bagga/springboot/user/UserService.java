@@ -5,6 +5,7 @@ import com.bagga.springboot.entities.User;
 import com.bagga.springboot.entities.UserCarInformation;
 import com.bagga.springboot.repositories.UserInformationRepository;
 import com.bagga.springboot.repositories.UserRepository;
+import com.bagga.springboot.reservations.responses.GetUserCarInformationResponse;
 import com.bagga.springboot.user.dtos.*;
 import com.bagga.springboot.user.responses.*;
 import lombok.RequiredArgsConstructor;
@@ -154,6 +155,10 @@ public class UserService {
             if (updateUserCarInformationDto.getColor() != null) {
                 userCarInformation.setColor(updateUserCarInformationDto.getColor());
             }
+
+            if (updateUserCarInformationDto.getImageUri() != null) {
+                userCarInformation.setImageUri(updateUserCarInformationDto.getImageUri());
+            }
             UserCarInformation savedUserCarInformation = this.userInformationRepository.save(userCarInformation);
             return UpdateUserCarInformationResponse.builder()
                     .id(savedUserCarInformation.getId())
@@ -161,6 +166,7 @@ public class UserService {
                     .model(savedUserCarInformation.getModel())
                     .color(savedUserCarInformation.getColor())
                     .userId(user.getId())
+                    .imageUri(savedUserCarInformation.getImageUri())
                     .build();
 
         } catch (Exception e) {
@@ -184,6 +190,24 @@ public class UserService {
                     .build();
         } catch (Exception e) {
             log.info(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
+    public GetUserCarInformationResponse getUserCarInformation(Integer userId) {
+        try {
+
+            User user = this.userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+            UserCarInformation userCarInformation = this.userInformationRepository.findByUser(user).orElseThrow(() -> new RuntimeException("UserCarInformation not found"));
+            return GetUserCarInformationResponse.builder()
+                    .id(userCarInformation.getId())
+                    .registrationNumber(userCarInformation.getRegistrationNumber())
+                    .model(userCarInformation.getModel())
+                    .color(userCarInformation.getColor())
+                    .userId(userCarInformation.getUser().getId())
+                    .imageUri(userCarInformation.getImageUri())
+                    .build();
+       } catch (Exception e) {log.info(e.getMessage());
             throw new RuntimeException(e);
         }
     }
