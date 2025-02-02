@@ -152,4 +152,15 @@ export type updateUserCarInformationResponse = {
     color: string,
     imageUri: string,
     userId: number
+} 
+
+export type userSettingsResponse = {
+    firstName:string,
+    lastName:string,
+    email:string,
+    phoneNumber:string,
+    color:string,
+    model:string,
+    registrationNumber:string,
+    imageUri:string
 }

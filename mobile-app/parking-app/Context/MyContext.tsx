@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, ReactNode, useContext } from 'react';
-import { loginResponse } from '../Apis/DataResponse/dataResponse';
+import { loginResponse, userSettingsResponse } from '../Apis/DataResponse/dataResponse';
 import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
 
 interface MyContextType {
@@ -9,7 +9,8 @@ interface MyContextType {
      setPlaceClicked: (placeClicked:number|0) => void ;
      showReservationModal:boolean;
      setShowReservationModal: (showReservationModal:boolean) => void;
-     
+     userSettings:userSettingsResponse;
+     setUserSettings:(userSettings:userSettingsResponse) => void;
 }
 
 export const MyContext = createContext<MyContextType | undefined>(undefined);
@@ -18,6 +19,7 @@ export const MyContextProvider: React.FC<{ children: ReactNode }> = ({ children 
     const [user, setUser] = useState<loginResponse | null>(null);
     const [placeClicked , setPlaceClicked] = useState<number>(0);
     const [showReservationModal,setShowReservationModal] = useState<boolean>(false);
+    const[userSettings,setUserSettings] = useState<userSettingsResponse>({firstName:"",lastName:"",email:"" , phoneNumber:"" , color:"" , model:"" , registrationNumber:"",imageUri:"" });
     useEffect(() => {
         const loadUser = async () => {
             try {
@@ -33,7 +35,7 @@ export const MyContextProvider: React.FC<{ children: ReactNode }> = ({ children 
     }, []);
 
     return (
-        <MyContext.Provider value={{ user,setUser,placeClicked,setPlaceClicked , showReservationModal , setShowReservationModal }}>
+        <MyContext.Provider value={{ user,setUser,placeClicked,setPlaceClicked , showReservationModal , setShowReservationModal , userSettings ,setUserSettings }}>
             {children}
         </MyContext.Provider>
     );
