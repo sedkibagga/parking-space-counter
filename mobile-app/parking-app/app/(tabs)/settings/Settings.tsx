@@ -1,4 +1,4 @@
-import { View, Text, Image, Dimensions, TextInput, Button, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, Image, Dimensions, TextInput, Button, ScrollView, KeyboardAvoidingView, Platform, Modal, ActivityIndicator } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import '../../../global.css';
 import AntDesign from '@expo/vector-icons/AntDesign';
@@ -8,7 +8,11 @@ import apiService from '../../../Apis/Services/apisService';
 import { getUserInformationResponse, updateUserCarInformationResponse } from '../../../Apis/DataResponse/dataResponse';
 import { updateUserCarInformationDto } from '../../../Apis/DataParam/dataParam';
 import UpdateUserInformationModal from '../../../component/UpdateUserInformationModal';
-
+import axios from 'axios';
+interface QRCodeResponse {
+  qrCode: string | null;
+  loading: boolean;
+}
 const Settings = () => {
   const { width, height } = Dimensions.get('window');
   const { user } = useMyContext();
@@ -16,12 +20,15 @@ const Settings = () => {
   const [userCarInformation, setUserCarInformation] = useState<getUserInformationResponse>({ id: 0, registrationNumber: "", model: "", color: "", imageUri: '', userId: 0 });
   const [image, setImage] = useState<string | null>(null);
   const [buttonSelected, setButtonSelected] = useState<number>(1);
+  const [qrCodeObj, setQrCodeObj] = useState<QRCodeResponse>({ qrCode: null, loading: true });
+  const [showQrCodeModal, setShowQrCodeModal] = useState<boolean>(false);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [modalContent, setModalContent] = useState<{ title: string; content: string }>({
     title: "",
     content: "",
   });
-   const {setUserSettings} = useMyContext();
+  const { setUserSettings } = useMyContext();
+
   //  console.warn("userCarInformation:", userCarInformation);
   useEffect(() => {
     if (user?.token && user?.id) {
@@ -31,7 +38,7 @@ const Settings = () => {
           setUserCarInformation(res);
           setImage(res.imageUri);
           // console.log("getUsercarInformation:", res);
-          setUserSettings({firstName:user.firstName,lastName:user.lastName,email:user.email,phoneNumber:user.tel,color:res.color,model:res.model,registrationNumber:res.registrationNumber,imageUri:res.imageUri});
+          setUserSettings({ firstName: user.firstName, lastName: user.lastName, email: user.email, phoneNumber: user.tel, color: res.color, model: res.model, registrationNumber: res.registrationNumber, imageUri: res.imageUri });
         } catch (error: any) {
           console.warn(error);
         }
@@ -39,7 +46,7 @@ const Settings = () => {
 
       fetchUserCarInformation();
     }
-  }, [user,modalVisible])
+  }, [user, modalVisible])
   const onAddIconClick = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
@@ -91,6 +98,31 @@ const Settings = () => {
     setModalVisible(true);
   };
 
+  const onQrCodeButtonClick = async () => {
+    try {
+      if (!user?.token) {
+        throw new Error("There is no token");
+      }
+      setShowQrCodeModal(true);
+      const response = await apiService.fetchQrCode(user.token, "vamos");
+      const base64Image = arrayBufferToBase64(response);
+      console.log("base64Image:", base64Image);
+      setQrCodeObj({ qrCode: `data:image/png;base64,${base64Image}`, loading: false });
+    } catch (error: any) {
+      console.error("Error fetching QR code:", error);
+      setQrCodeObj({ qrCode: null, loading: false });
+      alert("Failed to fetch QR code. Please try again.");
+    }
+  };
+
+  const arrayBufferToBase64 = (buffer: ArrayBuffer): string => {
+    const binary = [];
+    const bytes = new Uint8Array(buffer);
+    for (let i = 0; i < bytes.byteLength; i++) {
+      binary.push(String.fromCharCode(bytes[i]));
+    }
+    return btoa(binary.join(''));
+  };
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -116,26 +148,26 @@ const Settings = () => {
                 FirstName
               </Text>
             </View>
-           
-              <View className="flex flex-row items-center bg-white h-12 px-4 mx-5 rounded-md">
-                <TextInput
-                  placeholderTextColor="gray"
-                  placeholder="FirstName"
-                  className="flex-1 text-black"
-                  value={user?.firstName}
-                  editable={false}
 
-                />
-                <AntDesign name="edit" size={24} color="black" onPress={()=> {handleLongClickOnInformation("FirstName")}}/>
-              </View>
-           
+            <View className="flex flex-row items-center bg-white h-12 px-4 mx-5 rounded-md">
+              <TextInput
+                placeholderTextColor="gray"
+                placeholder="FirstName"
+                className="flex-1 text-black"
+                value={user?.firstName}
+                editable={false}
+
+              />
+              <AntDesign name="edit" size={24} color="black" onPress={() => { handleLongClickOnInformation("FirstName") }} />
+            </View>
+
 
             <View className='flex flex-row justify-start items-start mt-2 p-2'>
               <Text className='text-white text-2xl font-bold ml-5'>
                 LastName
               </Text>
             </View>
-           
+
             <View className="flex flex-row items-center bg-white h-12 px-4 mx-5 rounded-md">
               <TextInput
                 placeholderTextColor="gray"
@@ -144,15 +176,15 @@ const Settings = () => {
                 value={user?.lastName}
                 editable={false}
               />
-              <AntDesign name="edit" size={24} color="black" onPress={()=> {handleLongClickOnInformation("LastName")}}/>
+              <AntDesign name="edit" size={24} color="black" onPress={() => { handleLongClickOnInformation("LastName") }} />
             </View>
-           
+
             <View className='flex flex-row justify-start items-start mt-2 p-2'>
               <Text className='text-white text-2xl font-bold ml-5'>
                 Email
               </Text>
             </View>
-            
+
             <View className="flex flex-row items-center bg-white h-12 px-4 mx-5 rounded-md">
               <TextInput
                 placeholderTextColor="gray"
@@ -161,15 +193,15 @@ const Settings = () => {
                 value={user?.email}
                 editable={false}
               />
-              <AntDesign name="edit" size={24} color="black" onPress={()=> {handleLongClickOnInformation("Email")}}/>
+              <AntDesign name="edit" size={24} color="black" onPress={() => { handleLongClickOnInformation("Email") }} />
             </View>
-         
+
             <View className='flex flex-row justify-start items-start mt-2 p-2'>
               <Text className='text-white text-2xl font-bold ml-5'>
                 Phone Number
               </Text>
             </View>
-            
+
             <View className="flex flex-row items-center bg-white h-12 px-4 mx-5 rounded-md">
               <TextInput
                 placeholderTextColor="gray"
@@ -178,15 +210,15 @@ const Settings = () => {
                 value={user?.tel}
                 editable={false}
               />
-              <AntDesign name="edit" size={24} color="black" onPress={()=> {handleLongClickOnInformation("PhoneNumber")}}/>
+              <AntDesign name="edit" size={24} color="black" onPress={() => { handleLongClickOnInformation("PhoneNumber") }} />
             </View>
-           
+
             <View className='flex flex-row justify-start items-start mt-2 p-2'>
               <Text className='text-white text-2xl font-bold ml-5'>
                 Password
               </Text>
             </View>
-            
+
             <View className="flex flex-row items-center bg-white h-12 px-4 mx-5 rounded-md">
               <TextInput
                 placeholderTextColor="gray"
@@ -196,11 +228,11 @@ const Settings = () => {
                 editable={false}
                 secureTextEntry
               />
-              <AntDesign name="edit" size={24} color="black" onPress={()=> {handleLongClickOnInformation("Password")}}/>
+              <AntDesign name="edit" size={24} color="black" onPress={() => { handleLongClickOnInformation("Password") }} />
             </View>
-            
+
           </View>
-         
+
         )}
 
         {buttonSelected === 2 && (
@@ -218,7 +250,7 @@ const Settings = () => {
                 value={userCarInformation.color}
                 editable={false}
               />
-              <AntDesign name="edit" size={24} color="black" onPress={()=> {handleLongClickOnInformation("Color")}}/>
+              <AntDesign name="edit" size={24} color="black" onPress={() => { handleLongClickOnInformation("Color") }} />
             </View>
 
             <View className='flex flex-row justify-start items-start mt-2 p-2'>
@@ -234,7 +266,7 @@ const Settings = () => {
                 value={userCarInformation.model}
                 editable={false}
               />
-              <AntDesign name="edit" size={24} color="black" onPress={()=> {handleLongClickOnInformation("Model")}} />
+              <AntDesign name="edit" size={24} color="black" onPress={() => { handleLongClickOnInformation("Model") }} />
             </View>
 
             <View className='flex flex-row justify-start items-start mt-2 p-2'>
@@ -250,9 +282,12 @@ const Settings = () => {
                 value={userCarInformation.registrationNumber}
                 editable={false}
               />
-              <AntDesign name="edit" size={24} color="black" onPress={()=> {handleLongClickOnInformation("RegistrationNumber")}}/>
+              <AntDesign name="edit" size={24} color="black" onPress={() => { handleLongClickOnInformation("RegistrationNumber") }} />
             </View>
 
+            <View className='flex flex-row justify-center items-center mt-5 mb-4'>
+              <Button title='show qrcode' onPress={onQrCodeButtonClick} />
+            </View>
 
 
 
@@ -275,10 +310,25 @@ const Settings = () => {
         </View>
         <UpdateUserInformationModal
           visible={modalVisible}
-          setVisible={setModalVisible} 
+          setVisible={setModalVisible}
           title={modalContent.title}
           content={modalContent.content}
         />
+
+        <Modal visible={showQrCodeModal} transparent={true} animationType="fade">
+          <View className="flex-1 justify-center items-center bg-black/50">
+            <View className="bg-white p-5 rounded-lg w-4/5 justify-center items-center">
+              {qrCodeObj.loading ? (
+                <ActivityIndicator size="large" color="#0000ff" />
+              ) : qrCodeObj.qrCode ? (
+                <Image source={{ uri: qrCodeObj.qrCode }} className="w-60 h-60" />
+              ) : (
+                <Text className="text-xl text-red-500">Failed to load QR code.</Text>
+              )}
+              <Button title="Close" onPress={() => setShowQrCodeModal(false)} />
+            </View>
+          </View>
+        </Modal>
       </ScrollView>
     </KeyboardAvoidingView>
   );

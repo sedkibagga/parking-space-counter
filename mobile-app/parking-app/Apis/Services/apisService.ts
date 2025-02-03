@@ -34,7 +34,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
-const BaseUri = "http://192.168.1.2:8080/";
+const BaseUri = "http://192.168.1.4:8080/";
 
 const login = async (data: loginDto, setUser: (user: loginResponse | null) => void): Promise<loginResponse> => {
     try {
@@ -50,7 +50,10 @@ const login = async (data: loginDto, setUser: (user: loginResponse | null) => vo
         throw new Error(error.response?.data?.message || "Login failed");
     }
 };
- 
+  
+
+
+
 
 
 const createClient = async (
@@ -92,6 +95,19 @@ const updateUserCar = async (
         throw new Error(error.response?.data?.message || "Updating user car failed");
     }
 };
+
+const fetchQrCode = async (token: string, text: string): Promise<ArrayBuffer> => {
+    try {
+      const response = await axios.get(`${BaseUri}api/qrcode?text=${text}`, {
+        headers: { Authorization: `Bearer ${token}` },
+        responseType: 'arraybuffer',
+      });
+      return response.data;
+    } catch (error: any) {
+      console.error("Error fetching QR code:", error);
+      throw new Error(error.response?.data?.message || "Failed to fetch QR code. Please try again.");
+    }
+  };
 
 const updateUserCarInformation = async (
   token: string,
@@ -295,7 +311,8 @@ const apiService = {
     createReservation,
     createFacture,
     getUserCarInformation,
-    updateUserCarInformation
+    updateUserCarInformation,
+    fetchQrCode
 };
 
 export default apiService;
