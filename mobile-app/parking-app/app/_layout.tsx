@@ -11,6 +11,8 @@ const RootLayout = () => {
       <Stack.Screen name='pages/RegisterPage' options={{ headerShown: false  }} />
       <Stack.Screen name="pages/ServicesPage" options={{ headerShown: false }} />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name='pages/FacturePage' options={{ headerShown: false }} />
+      <Stack.Screen name='pages/PaymentConfirmationPage' options={{headerShown:false}}/>
     </Stack>
     </MyContextProvider>
   )

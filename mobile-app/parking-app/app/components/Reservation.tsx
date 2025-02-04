@@ -1,24 +1,23 @@
 import { View, Text, Image, Modal, Pressable, Button, TextInput, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import '../global.css';
-import { factureReservationResponse, zonePermitFreeResponse, zonePermitOccupiedResponse } from '../Apis/DataResponse/dataResponse';
-import apiService from '../Apis/Services/apisService';
-import ReservationCard from './ReservationCard';
-import { useMyContext } from '../Context/MyContext';
-import { createFactureDto, createReservationDto } from '../Apis/DataParam/dataParam';
+import '../../global.css'
+import { factureReservationResponse, zonePermitFreeResponse, zonePermitOccupiedResponse } from '../../Apis/DataResponse/dataResponse';
+import apiService from '../../Apis/Services/apisService';
+import ReservationCard from '../../component/ReservationCard';
+import { useMyContext } from '../../Context/MyContext';
+import { createFactureDto, createReservationDto } from '../../Apis/DataParam/dataParam';
 import { goBack } from 'expo-router/build/global-state/routing';
 import Entypo from '@expo/vector-icons/build/Entypo';
 import FontAwesome5 from '@expo/vector-icons/build/FontAwesome5';
 import { router } from 'expo-router';
 
 const Reservation = () => {
-    const { user, showReservationModal, setShowReservationModal, placeClicked } = useMyContext();
+    const { user, showReservationModal, setShowReservationModal, placeClicked,facture,setFacture } = useMyContext();
     const [freePlacesList, setFreePlacesList] = useState<zonePermitFreeResponse[]>([]);
     const [occupiedPlacesList, setOccupiedPlacesList] = useState<zonePermitOccupiedResponse[]>([]);
     const [reservationDate, setReservationDate] = useState<string>('');
     const [startTime, setStartTime] = useState<string>('');
     const [endingTime, setEndingTime] = useState<string>('');
-    const [facture, setFacture] = useState<factureReservationResponse>({ zoneId: 0, reservation_Time: "", reservation_Duration: "", total_Amount: "", firstName: "", lastName: "", cin: "", email: "", tel: "" });
     const [showFactureModal, setShowFactureModal] = useState<boolean>(false);
     const [totalFacture, setTotalFacture] = useState<number>(0);
     const [totalfactureToString, setTotalFactureToString] = useState<string>('');
@@ -177,7 +176,7 @@ const Reservation = () => {
                 fetchOccupiedPlaces();
                 setShowFactureModal(false);
                 setShowReservationModal(false);
-                router.push('/(tabs)/app/pages/FacturePage');
+                router.push('/pages/PaymentConfirmationPage');
             } else {
                 console.warn('User token is undefined');
             }
@@ -201,6 +200,8 @@ const Reservation = () => {
         if (showFactureModal) {
             const totalAmount = convertTotalAmount(facture.total_Amount.split(',')[0]);
             setTotalFacture(totalAmount);
+        //    facture.total_Amount=totalAmount.toString();
+        //    setFacture(facture);
             const formattedTotal = totalAmount.toFixed(2).replace('.', ',');
             setTotalFactureToString(formattedTotal);
         }
@@ -262,7 +263,7 @@ const Reservation = () => {
 
             <View className='flex flex-col h-1/4'>
                 <Image
-                    source={require('../assets/Capture5.png')}
+                    source={require('../../assets/Capture5.png')}
                     className='h-full w-full'
                 />
             </View>
@@ -296,7 +297,7 @@ const Reservation = () => {
                     <View className='flex flex-col justify-center items-center h-1/4 mt-10'>
                     
                         <Image
-                            source={require('../assets/reservation-parking-en-ligne.jpeg')}
+                            source={require('../../assets/reservation-parking-en-ligne.jpeg')}
                             className='h-full w-full object-cover rounded-lg'
                         />
 
@@ -380,7 +381,7 @@ const Reservation = () => {
                     style={{ flex: 1 }}
                 >
                     <ScrollView className='bg-black h-full flex flex-col'>
-
+                        
                         <View className='flex flex-row items-start justify-start mt-20 ml-5'>
                             <Text className='text-white text-3xl'>Invoice</Text>
                         </View>

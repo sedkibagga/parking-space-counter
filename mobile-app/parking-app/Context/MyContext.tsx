@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, ReactNode, useContext } from 'react';
-import { loginResponse, userSettingsResponse } from '../Apis/DataResponse/dataResponse';
+import { factureReservationResponse, loginResponse, userSettingsResponse } from '../Apis/DataResponse/dataResponse';
 import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
 
 interface MyContextType {
@@ -11,12 +11,15 @@ interface MyContextType {
      setShowReservationModal: (showReservationModal:boolean) => void;
      userSettings:userSettingsResponse;
      setUserSettings:(userSettings:userSettingsResponse) => void;
+     facture:factureReservationResponse;
+     setFacture:(facture:factureReservationResponse) => void;
 }
 
 export const MyContext = createContext<MyContextType | undefined>(undefined);
 
 export const MyContextProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [user, setUser] = useState<loginResponse | null>(null);
+    const [facture, setFacture] = useState<factureReservationResponse>({ zoneId: 0, reservation_Time: "", reservation_Duration: "", total_Amount: "", firstName: "", lastName: "", cin: "", email: "", tel: "" });
     const [placeClicked , setPlaceClicked] = useState<number>(0);
     const [showReservationModal,setShowReservationModal] = useState<boolean>(false);
     const[userSettings,setUserSettings] = useState<userSettingsResponse>({firstName:"",lastName:"",email:"" , phoneNumber:"" , color:"" , model:"" , registrationNumber:"",imageUri:"" });
@@ -35,7 +38,7 @@ export const MyContextProvider: React.FC<{ children: ReactNode }> = ({ children 
     }, []);
 
     return (
-        <MyContext.Provider value={{ user,setUser,placeClicked,setPlaceClicked , showReservationModal , setShowReservationModal , userSettings ,setUserSettings }}>
+        <MyContext.Provider value={{ user,setUser,placeClicked,setPlaceClicked , showReservationModal , setShowReservationModal , userSettings ,setUserSettings ,facture ,setFacture }}>
             {children}
         </MyContext.Provider>
     );
