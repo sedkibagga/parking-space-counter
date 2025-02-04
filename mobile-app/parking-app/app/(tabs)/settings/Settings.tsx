@@ -27,7 +27,7 @@ const Settings = () => {
     title: "",
     content: "",
   });
-  const { setUserSettings } = useMyContext();
+  const { setUserSettings,userSettings } = useMyContext();
 
   //  console.warn("userCarInformation:", userCarInformation);
   useEffect(() => {
@@ -37,8 +37,8 @@ const Settings = () => {
           const res = await apiService.getUserCarInformation(user.token, user.id);
           setUserCarInformation(res);
           setImage(res.imageUri);
-          // console.log("getUsercarInformation:", res);
-          setUserSettings({ firstName: user.firstName, lastName: user.lastName, email: user.email, phoneNumber: user.tel, color: res.color, model: res.model, registrationNumber: res.registrationNumber, imageUri: res.imageUri });
+          const userInfo = await apiService.getUser(user.token,user.id);
+          setUserSettings({ firstName: userInfo.firstName, lastName: userInfo.lastName, email: userInfo.email, phoneNumber: userInfo.phoneNumber, color: res.color, model: res.model, registrationNumber: res.registrationNumber, imageUri: res.imageUri });
         } catch (error: any) {
           console.warn(error);
         }
@@ -154,7 +154,7 @@ const Settings = () => {
                 placeholderTextColor="gray"
                 placeholder="FirstName"
                 className="flex-1 text-black"
-                value={user?.firstName}
+                value={userSettings?.firstName}
                 editable={false}
 
               />
@@ -173,7 +173,7 @@ const Settings = () => {
                 placeholderTextColor="gray"
                 placeholder="LastName"
                 className="flex-1 text-black"
-                value={user?.lastName}
+                value={userSettings?.lastName}
                 editable={false}
               />
               <AntDesign name="edit" size={24} color="black" onPress={() => { handleLongClickOnInformation("LastName") }} />
@@ -190,7 +190,7 @@ const Settings = () => {
                 placeholderTextColor="gray"
                 placeholder="Email"
                 className="flex-1 text-black"
-                value={user?.email}
+                value={userSettings?.email}
                 editable={false}
               />
               <AntDesign name="edit" size={24} color="black" onPress={() => { handleLongClickOnInformation("Email") }} />
@@ -207,7 +207,7 @@ const Settings = () => {
                 placeholderTextColor="gray"
                 placeholder="Phone Number"
                 className="flex-1 text-black"
-                value={user?.tel}
+                value={userSettings?.phoneNumber}
                 editable={false}
               />
               <AntDesign name="edit" size={24} color="black" onPress={() => { handleLongClickOnInformation("PhoneNumber") }} />

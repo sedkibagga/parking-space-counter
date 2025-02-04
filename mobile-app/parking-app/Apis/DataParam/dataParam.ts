@@ -72,3 +72,16 @@ export type updateUserCarInformationDto = {
     imageUri: string
 
 }
+
+export type UpdateUserPasswordDto = {
+    oldPassword: string,
+    newPassword: string,
+    confirmPassword: string
+}
+
+export type UpdateUserInformationDto = {
+    firstName: string,
+    lastName: string,
+    email: string,
+    phoneNumber: string
+}

@@ -145,6 +145,13 @@ export type getUserInformationResponse = {
 
 }
 
+export type getUserResponse = {
+    firstName:string,
+    lastName:string,
+    email:string,
+    phoneNumber:string
+}
+
 export type updateUserCarInformationResponse = {
     id: number,
     registrationNumber: string;
@@ -163,4 +170,20 @@ export type userSettingsResponse = {
     model:string,
     registrationNumber:string,
     imageUri:string
+}
+
+export type UpdateUserPasswordResponse = {
+    firstName:string,
+    lastName:string,
+    Cin:string,
+    email:string,
+    tel:string
+}
+
+export type UpdateUserInformationResponse = {
+    id:number ,
+    firstName:string,
+    lastName:string,
+    email:string,
+    phoneNumber:string
 }

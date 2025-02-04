@@ -9,6 +9,7 @@ import {
     createReservationDto,
     createFactureDto,
     updateUserCarInformationDto,
+    UpdateUserInformationDto,
 }
     from '../DataParam/dataParam';
 import {
@@ -29,12 +30,15 @@ import {
     CreateFactureResponse,
     getUserInformationResponse,
     updateUserCarInformationResponse,
+    UpdateUserPasswordResponse,
+    UpdateUserInformationResponse,
+    getUserResponse,
 } from "../DataResponse/dataResponse";
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
-const BaseUri = "http://192.168.1.4:8080/";
+const BaseUri = "http://172.20.10.6:8080/";
 
 const login = async (data: loginDto, setUser: (user: loginResponse | null) => void): Promise<loginResponse> => {
     try {
@@ -80,6 +84,52 @@ const createAdmin = async (
         throw new Error(error.response?.data?.message || "Creating admin failed");
     }
 };
+
+const updateUserPassword = async (
+    token:string,
+    updateUserPasswordDto:UpdateUserInformationDto
+):Promise<UpdateUserPasswordResponse> => {
+    try {
+
+        const response = await axios.patch(`${BaseUri}api/user/updateUserPassword`, updateUserPasswordDto, {
+            headers: { Authorization: `Bearer ${token}` },
+        })
+
+        return response.data
+
+    } catch(error:any) {
+        throw new Error(error.response?.data?.message || "Updating user password failed");
+    }
+}
+
+const updateUserInformation = async (
+    token:string,
+    updateUserInformationDto:UpdateUserInformationDto,
+    userId:number
+):Promise<UpdateUserInformationResponse> => {
+    try {
+        const response = await axios.patch(`${BaseUri}api/user/updateUserInformation/${userId}`, updateUserInformationDto, {
+            headers: { Authorization: `Bearer ${token}` },
+        })
+        return response.data
+    } catch(error:any) {
+        throw new Error(error.response?.data?.message || "Updating user information failed");
+    }
+}
+
+const getUser = async (
+    token:string,
+    userId:number
+):Promise<getUserResponse> => {
+    try {
+        const response = await axios.get(`${BaseUri}api/user/getUserInformation/${userId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        return response.data;
+    } catch (error: any) {
+        throw new Error(error.response?.data?.message || "Getting user failed");
+    }
+}
 
 const updateUserCar = async (
     data: updateUserCarDto,
@@ -312,7 +362,10 @@ const apiService = {
     createFacture,
     getUserCarInformation,
     updateUserCarInformation,
-    fetchQrCode
+    fetchQrCode,
+    updateUserPassword,
+    updateUserInformation,
+    getUser
 };
 
 export default apiService;

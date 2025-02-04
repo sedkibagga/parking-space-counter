@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import '../global.css';
 import { useMyContext } from '../Context/MyContext';
 import { userSettingsResponse } from '../Apis/DataResponse/dataResponse';
-import { updateUserCarInformationDto } from '../Apis/DataParam/dataParam';
+import { updateUserCarInformationDto, UpdateUserInformationDto } from '../Apis/DataParam/dataParam';
 import apiService from '../Apis/Services/apisService';
 
 type UpdateUserInformationModalProps = {
@@ -31,14 +31,21 @@ const UpdateUserInformationModal = ({
         imageUri: userSettings.imageUri
     };
 
+    const updateUserInformation: UpdateUserInformationDto = {
+        firstName: userSettings.firstName,
+        lastName: userSettings.lastName,
+        email: userSettings.email,
+        phoneNumber: userSettings.phoneNumber
+    };
+
     const handleConfirm = async () => {
         try {
             if (user?.token && user?.id) {
-                
+
                 if (title === "Edit Color" && textChanges) {
                     updateUserCarInformationDto.color = textChanges;
                 }
-    
+
                 if (title === "Edit RegistrationNumber" && textChanges) {
                     updateUserCarInformationDto.registrationNumber = textChanges;
                 }
@@ -48,9 +55,27 @@ const UpdateUserInformationModal = ({
                 }
 
                 await apiService.updateUserCarInformation(user.token, updateUserCarInformationDto, user.id);
-                 setTextChanges("");
-                setVisible(false);
+
+                if (title === "Edit FirstName" && textChanges) {
+                    updateUserInformation.firstName = textChanges;
+                }
+
+                if (title === "Edit LastName" && textChanges) {
+                    updateUserInformation.lastName = textChanges;
+                }
+
+                if (title === "Edit Email" && textChanges) {
+                    updateUserInformation.email = textChanges;
+                }
+
+                if (title === "Edit PhoneNumber" && textChanges) {
+                    updateUserInformation.phoneNumber = textChanges;
+                }
+
+                await apiService.updateUserInformation(user.token, updateUserInformation, user.id);
             }
+            setTextChanges("");
+            setVisible(false);
         } catch (error: any) {
             alert(error);
             console.warn("error:", error);
