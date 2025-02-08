@@ -10,6 +10,8 @@ import {
     createFactureDto,
     updateUserCarInformationDto,
     UpdateUserInformationDto,
+    createCommentDto,
+    updateCommentByIdDto,
 }
     from '../DataParam/dataParam';
 import {
@@ -33,6 +35,11 @@ import {
     UpdateUserPasswordResponse,
     UpdateUserInformationResponse,
     getUserResponse,
+    createCommentResponse,
+    updateCommentByIdResponse,
+    getAllCommentsResponse,
+    deleteCommentByIdResponse,
+    getCommentContainingFirstLastNameResponse,
 } from "../DataResponse/dataResponse";
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -342,7 +349,92 @@ const createReservation = async (
             error.response?.data?.message || "Creating reservation failed"
         );
     }
+};
+
+const createComment = async (
+    createCommentDto: createCommentDto,
+    token: string
+): Promise<createCommentResponse> => {
+    try {
+        const response = await axios.post(`${BaseUri}api/comments/createComment`, createCommentDto, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        return response.data;
+    } catch (error: any) {
+        throw new Error(
+            error.response?.data?.message || "Creating comment failed"
+        );
+    }
 }
+
+const updateComment = async (
+    updateCommentDto: updateCommentByIdDto,
+    token: string,
+    commentId: number
+): Promise<updateCommentByIdResponse> => {
+    try {
+        const response = await axios.patch(`${BaseUri}api/comments/updateComment/${commentId}`, updateCommentDto, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        return response.data;
+    } catch (error: any) {
+        throw new Error(
+            error.response?.data?.message || "Updating comment failed"
+        );
+    }
+}
+
+const getAllComments = async (
+    token: string
+) : Promise<getAllCommentsResponse[]> => {
+    try {
+        const response = await axios.get(`${BaseUri}api/comments/getAllComments`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        return response.data;
+    } catch (error: any) {
+        throw new Error(
+            error.response?.data?.message || "Fetching comments failed"
+        );
+    }
+} 
+
+const getCommentContainingFirstLastName = async (
+    token: string,
+    firstName:string|undefined,
+    lastName:string|undefined
+) :Promise<getCommentContainingFirstLastNameResponse[]> => {
+    try {
+       const response = await axios.get(`${BaseUri}api/comments/getCommentContainingUserFirstNameAndLastNames/${firstName}/${lastName}`, {
+           headers: { Authorization: `Bearer ${token}` },
+       })
+       return response.data;
+    } catch(error:any) {
+        throw new Error(
+            error.response?.data?.message || "Fetching comments failed"
+        );
+    }
+} 
+
+
+
+
+const deleteComment = async (
+    token: string,
+    commentId: number
+): Promise<deleteCommentByIdResponse> => {
+    try {
+        const response = await axios.delete(`${BaseUri}api/comments/deleteComment/${commentId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        return response.data;
+    } catch (error: any) {
+        throw new Error(
+            error.response?.data?.message || "Deleting comment failed"
+        );
+    }
+}
+
 
 
 const apiService = {
@@ -365,7 +457,12 @@ const apiService = {
     fetchQrCode,
     updateUserPassword,
     updateUserInformation,
-    getUser
+    getUser,
+    getAllComments,
+    getCommentContainingFirstLastName,
+    deleteComment,
+    createComment,
+    updateComment,
 };
 
 export default apiService;

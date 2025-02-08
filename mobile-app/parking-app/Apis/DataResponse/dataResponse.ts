@@ -187,3 +187,38 @@ export type UpdateUserInformationResponse = {
     email:string,
     phoneNumber:string
 }
+
+export type createCommentResponse = {
+    id: number,
+    comment: string,
+    date: string,
+    userId: number
+}
+
+export type getAllCommentsResponse = {
+    id: number,
+    comment: string,
+    date: string,
+    firstName: string,
+    lastName: string,
+    imageUri: string
+} 
+
+export type deleteCommentByIdResponse = {
+    id: number,
+    comment: string
+}
+
+export type getCommentContainingFirstLastNameResponse = {
+    id: number,
+    comment: string,
+    date: string,
+    firstName: string,
+    lastName: string,
+    imageUri: string
+}
+
+export type updateCommentByIdResponse = {
+    id: number,
+    comment: string
+}

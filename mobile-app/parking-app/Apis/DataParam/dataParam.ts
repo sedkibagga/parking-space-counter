@@ -85,3 +85,13 @@ export type UpdateUserInformationDto = {
     email: string,
     phoneNumber: string
 }
+
+export type createCommentDto = {
+    comment: string
+    userId: number
+}
+
+export type updateCommentByIdDto = {
+    comment: string,
+    
+}
