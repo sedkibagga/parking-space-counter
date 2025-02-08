@@ -1,13 +1,45 @@
 import { View, Text, TextInput, KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity } from 'react-native';
 import React, { useState } from 'react';
 import '../../../global.css';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Ionicons } from '@expo/vector-icons';
 import FeedbackComponent from '../../components/FeedbackComponent';
+import { useMyContext } from '../../../Context/MyContext';
+import { createCommentDto } from '../../../Apis/DataParam/dataParam';
+import apiService from '../../../Apis/Services/apisService';
 
 const FeedbackPage = () => {
   const [page, setPage] = useState(1);
-  const [commentsLength, setCommentsLength] = useState(0);
+  const [commentsLength, setCommentsLength] = useState<number>(0);
+  const [feedback, setFeedback] = useState<string>('');
+  const [refreshComments, setRefreshComments] = useState<boolean>(false);
+  const { user } = useMyContext();
+
+  const handleSendFeedback = async () => {
+    try {
+      if (feedback.length === 0) {
+        console.warn("Feedback shouldn't be empty");
+        return;
+      }
+
+      if (!user || !user.token || !user.id) {
+        console.warn("User shouldn't be null");
+        return;
+      }
+
+      const createCommentDto: createCommentDto = {
+        userId: user.id,
+        comment: feedback,
+      };
+
+      const res = await apiService.createComment(createCommentDto, user.token);
+      console.log(res);
+
+      setFeedback('');
+      setRefreshComments((prev) => !prev); 
+    } catch (error: any) {
+      console.warn(error);
+    }
+  };
 
   return (
     <KeyboardAvoidingView
@@ -23,7 +55,11 @@ const FeedbackPage = () => {
           className="bg-black flex flex-col"
         >
           <View className='flex flex-col justify-between mt-10'>
-            <FeedbackComponent page={page} setCommentsLength={setCommentsLength} />
+            <FeedbackComponent
+              page={page}
+              setCommentsLength={setCommentsLength}
+              refreshComments={refreshComments} 
+            />
           </View>
         </ScrollView>
 
@@ -45,10 +81,12 @@ const FeedbackPage = () => {
           <View className="flex flex-row items-center bg-white px-3 mx-3 rounded-lg p-1">
             <TextInput
               placeholderTextColor="gray"
-              placeholder="send feedback"
+              placeholder="Send feedback"
               className="flex-1 text-black"
+              value={feedback} // Controlled input
+              onChange={(e) => setFeedback(e.nativeEvent.text)}
             />
-            <Ionicons name="send" size={20} color="blue" />
+            <Ionicons name="send" size={20} color="blue" onPress={handleSendFeedback} />
           </View>
         </View>
       </View>
