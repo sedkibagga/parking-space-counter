@@ -1,5 +1,5 @@
 import { View, Text, TextInput, KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity } from 'react-native';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import '../../../global.css';
 import { Ionicons } from '@expo/vector-icons';
 import FeedbackComponent from '../../components/FeedbackComponent';
@@ -9,10 +9,10 @@ import apiService from '../../../Apis/Services/apisService';
 
 const FeedbackPage = () => {
   const [page, setPage] = useState(1);
-  const [commentsLength, setCommentsLength] = useState<number>(0);
   const [feedback, setFeedback] = useState<string>('');
   const [refreshComments, setRefreshComments] = useState<boolean>(false);
-  const { user } = useMyContext();
+  const { user, commentsLength, setCommentsLength, getAllComments, comments } = useMyContext();
+  // console.warn("commentLength:", commentsLength)
 
   const handleSendFeedback = async () => {
     try {
@@ -32,15 +32,24 @@ const FeedbackPage = () => {
       };
 
       const res = await apiService.createComment(createCommentDto, user.token);
-      console.log(res);
-
+      // console.log(res);
+      getAllComments();
       setFeedback('');
-      setRefreshComments((prev) => !prev); 
+      setRefreshComments((prev) => !prev);
     } catch (error: any) {
       console.warn(error);
     }
   };
+  const sortedComments = [...comments].sort((a, b) => 
+    new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
 
+  const startIndex = (page - 1) * 5;
+  const endIndex = startIndex + 5;
+  const commentsToShow = sortedComments.slice(startIndex, endIndex);
+  useEffect(() => {
+    getAllComments();
+  }, []);
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -55,11 +64,17 @@ const FeedbackPage = () => {
           className="bg-black flex flex-col"
         >
           <View className='flex flex-col justify-between mt-10'>
-            <FeedbackComponent
-              page={page}
-              setCommentsLength={setCommentsLength}
-              refreshComments={refreshComments} 
-            />
+            {commentsToShow.map((comment, index) => (
+              <FeedbackComponent
+                key={comment.id}
+                comment={comment}
+                page={page}
+                // setCommentsLength={setCommentsLength}
+                refreshComments={refreshComments}
+                index={index}
+                totalComments={commentsToShow.length} 
+              />
+            ))}
           </View>
         </ScrollView>
 
@@ -78,13 +93,14 @@ const FeedbackPage = () => {
         </View>
 
         <View className='h-1/6 flex flex-row items-center justify-center'>
-          <View className="flex flex-row items-center bg-white px-3 mx-3 rounded-lg p-1">
+          <View className="flex flex-row items-center bg-gray-900 px-3 mx-3 rounded-lg p-2">
             <TextInput
               placeholderTextColor="gray"
               placeholder="Send feedback"
-              className="flex-1 text-black"
-              value={feedback} // Controlled input
+              className="flex-1 text-white"
+              value={feedback} 
               onChange={(e) => setFeedback(e.nativeEvent.text)}
+              
             />
             <Ionicons name="send" size={20} color="blue" onPress={handleSendFeedback} />
           </View>

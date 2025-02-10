@@ -15,7 +15,7 @@ interface QRCodeResponse {
 }
 const Settings = () => {
   const { width, height } = Dimensions.get('window');
-  const { user } = useMyContext();
+  const { user,getAllComments } = useMyContext();
   const iconSize = width * 0.08;
   const [userCarInformation, setUserCarInformation] = useState<getUserInformationResponse>({ id: 0, registrationNumber: "", model: "", color: "", imageUri: '', userId: 0 });
   const [image, setImage] = useState<string | null>(null);
@@ -64,9 +64,8 @@ const Settings = () => {
     if (!result.canceled) {
       console.warn("result.assets[0].uri:", result.assets[0].uri);
       setImage(result.assets[0].uri);
-
-
       userCarInformation.imageUri = result.assets[0].uri;
+      getAllComments();
       console.warn("userCarInformation.imageUri:", userCarInformation.imageUri)
     }
   };
@@ -285,10 +284,7 @@ const Settings = () => {
               <AntDesign name="edit" size={24} color="black" onPress={() => { handleLongClickOnInformation("RegistrationNumber") }} />
             </View>
 
-            <View className='flex flex-row justify-center items-center mt-5 mb-4'>
-              <Button title='show qrcode' onPress={onQrCodeButtonClick} />
-            </View>
-
+           
 
 
           </View>
