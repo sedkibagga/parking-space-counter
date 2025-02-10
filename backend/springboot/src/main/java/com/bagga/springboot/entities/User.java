@@ -40,6 +40,11 @@ public class User implements UserDetails {
     @JsonManagedReference
     @ToString.Exclude
     private List<ReservedPlaces> reservedPlaces ;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    @ToString.Exclude
+    private List<CommentsOfUser> commentsOfUsers ;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role));

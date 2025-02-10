@@ -1,20 +1,18 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
-
+import './global.css';
+import Home from './component/Home';
+import Services from './component/Services';
+import Login from './component/Login';
+import { MyContextProvider } from './Context/MyContext';
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>hi guys </Text>
-      <StatusBar style="auto" />
+    <MyContextProvider>
+    <View className='flex-1 '>
+      <Login />
     </View>
+    </MyContextProvider>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+

@@ -1,5 +1,6 @@
 package com.bagga.springboot.user;
 
+import com.bagga.springboot.reservations.responses.GetUserCarInformationResponse;
 import com.bagga.springboot.user.dtos.*;
 import com.bagga.springboot.user.responses.*;
 import jakarta.validation.Valid;
@@ -38,5 +39,26 @@ public class UserController {
     @DeleteMapping("/user/deleteUserCarInformation/{id}")
     public DeleteUserCarInformation deleteUserCarInformation(@PathVariable Integer id) {
         return this.userService.deleteUserCarInformation(id) ;
+    }
+
+    @GetMapping("/user/getUserCarInformation/{id}")
+    public GetUserCarInformationResponse getUserCarInformation(@PathVariable Integer id) {
+        return this.userService.getUserCarInformation(id) ;
+
+    }
+
+    @PatchMapping("/user/updateUserPassword")
+    public UpdateUserPasswordResponse updateUserPassword(@RequestBody UpdateUserPasswordDto updateUserPasswordDto) {
+        return this.userService.updateUserPassword(updateUserPasswordDto) ;
+    }
+
+    @PatchMapping("/user/updateUserInformation/{id}")
+    public UpdateUserInformationResponse updateUserInformation(@RequestBody UpdateUserInformationDto updateUserInformationDto , @PathVariable Integer id) {
+        return this.userService.updateUserInformation(id , updateUserInformationDto) ;
+    }
+
+    @GetMapping("/user/getUserInformation/{id}")
+    public GetUserInformationResponse getUserInformationResponse(@PathVariable Integer id) {
+        return this.userService.getUserInformationResponse(id) ;
     }
 }

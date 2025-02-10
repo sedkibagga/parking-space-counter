@@ -9,6 +9,10 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$/mobile-app/parking-app/node_modules/@react-native/gradle-plugin" />
+            <option value="$PROJECT_DIR$/mobile-app/parking-app/node_modules/@react-native/gradle-plugin/react-native-gradle-plugin" />
+            <option value="$PROJECT_DIR$/mobile-app/parking-app/node_modules/@react-native/gradle-plugin/settings-plugin" />
+            <option value="$PROJECT_DIR$/mobile-app/parking-app/node_modules/@react-native/gradle-plugin/shared" />
+            <option value="$PROJECT_DIR$/mobile-app/parking-app/node_modules/@react-native/gradle-plugin/shared-testutil" />
           </set>
         </option>
       </GradleProjectSettings>

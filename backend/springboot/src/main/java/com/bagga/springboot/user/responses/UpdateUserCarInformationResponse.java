@@ -17,4 +17,5 @@ public class UpdateUserCarInformationResponse {
     private String  model;
     private String color;
     private Integer userId;
+    private String imageUri;
 }
