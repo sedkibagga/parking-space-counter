@@ -1,15 +1,14 @@
-import { useState } from 'react'
 import './App.css'
-import TestComponent from './component/TestComponent'
+import SignUp from './component/SignUp'
 
 function App() {
- 
+
 
   return (
     <div className='flex flex-col h-screen bg-black'>
 
       <div>
-       <TestComponent/>
+        <SignUp />
       </div>
 
     </div>

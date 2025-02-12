@@ -42,8 +42,7 @@ import {
     getCommentContainingFirstLastNameResponse,
 } from "../DataResponse/dataResponse";
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
+
 
 const BaseUri = "http://192.168.31.197:8080/";
 
@@ -53,8 +52,8 @@ const login = async (data: loginDto, setUser: (user: loginResponse | null) => vo
         const userData: loginResponse = response.data;
         console.log("userdata: " , userData)
         setUser(userData);
-        await AsyncStorage.setItem('userData', JSON.stringify(userData));
-        const storedUser = await AsyncStorage.getItem('userData');
+        await localStorage.setItem('userData', JSON.stringify(userData));
+        const storedUser = await localStorage.getItem('userData');
         console.log("User in storage:", storedUser);
         return response.data;
     } catch (error: any) {
