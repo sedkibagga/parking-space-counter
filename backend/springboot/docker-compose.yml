@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres-db
+    restart: always
+    environment:
+      POSTGRES_DB: PARKING_DB
+      POSTGRES_USER: bagga
+      POSTGRES_PASSWORD: 3asfour25102212
+    ports:
+      - "5432:5432"
+    networks:
+      - my-network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    container_name: spring-boot-app
+    depends_on:
+      - postgres
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/PARKING_DB
+      SPRING_DATASOURCE_USERNAME: bagga
+      SPRING_DATASOURCE_PASSWORD: 3asfour25102212
+      SECRET_KEY: xZbS8VmV7wLm5mQt5eNX7K6VQ5KY4ZPzG6j4CmH8Q9L2J7XkWzV8UzZkN2V4C5T8
+    networks:
+      - my-network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"  # Access pgAdmin in browser at http://localhost:5050
+    depends_on:
+      - postgres
+    networks:
+      - my-network
+networks:
+  my-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
