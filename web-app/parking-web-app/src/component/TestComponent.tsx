@@ -4,7 +4,7 @@ function TestComponent() {
   return (
     <div>
        <p className=' text-3xl text-white font-bold'>
-          yallla
+          aaaaa
         </p>
         
     </div>

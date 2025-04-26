@@ -1,11 +1,11 @@
 package com.bagga.springboot.config;
 
-import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import java.security.Key;
@@ -19,17 +19,36 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class JwtService {
-    private static final Dotenv dotenv = Dotenv.configure()
-            .directory("C:\\Users\\Dell\\Desktop\\The Future of Parking\\backend\\springboot\\src\\main\\resources")
-            .filename(".env")
-            .load();
+//    private static final Dotenv dotenv = Dotenv.configure()
+//            .directory("C:\\Users\\Dell\\Desktop\\The Future of Parking\\backend\\springboot\\src\\main\\resources")
+//            .filename(".env")
+//            .load();
+//
+//    private static final String SECRET_KEY = dotenv.get("SECRET_KEY");
+//    public JwtService() {
+//
+////        log.info("SECRET_KEY: {}", dotenv.get("SECRET_KEY"));
+//        log.info("SECRET_KEY: {}", SECRET_KEY);
+//    }
 
-    private static final String SECRET_KEY = dotenv.get("SECRET_KEY");
+//    private static final Dotenv dotenv = Dotenv.configure()
+//            .directory("/home/app") // Path to the .env file inside the container
+//            .filename(".env")
+//            .load();
+//
+//    private static final String SECRET_KEY = dotenv.get("SECRET_KEY");
+//
+//    public JwtService() {
+//
+//        log.info("SECRET_KEY: {}", dotenv.get("SECRET_KEY"));
+//    }
+
+    private static final String SECRET_KEY = System.getenv("SECRET_KEY");
 
     public JwtService() {
-
-        log.info("SECRET_KEY: {}", dotenv.get("SECRET_KEY"));
+        log.info("SECRET_KEY: {}", SECRET_KEY);
     }
+
 
 
 
