@@ -3,7 +3,7 @@ version: '3.8'
 services:
   postgres:
     image: postgres:15
-    container_name: postgres-db
+    container_name: postgres-db-container
     restart: always
     environment:
       POSTGRES_DB: PARKING_DB

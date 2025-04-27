@@ -40,6 +40,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 requestURI.startsWith("/api/createAdmin") ||
                 requestURI.startsWith("/swagger-ui/") ||
                 requestURI.startsWith("/v3/api-docs/") ||
+                requestURI.startsWith("/ws/**") ||
                 authHeader == null ||
                 !authHeader.startsWith("Bearer")) {
             filterChain.doFilter(request, response);

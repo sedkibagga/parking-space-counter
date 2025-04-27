@@ -222,3 +222,16 @@ export type updateCommentByIdResponse = {
     id: number,
     comment: string
 }
+export type ZoneStatus = {
+    zoneId: number;
+    status: string;
+  };
+  
+  export type ReservationResponse = {
+    zoneId: number;
+    status: string;
+    reservation_Time: string;
+    reservation_Duration: string;
+    total_Amount: string;
+    userId: number;
+  };

@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -33,14 +34,19 @@ public class ReservationController {
     private final ParkingHistoryOfUserRepository parkingHistoryOfUserRepository;
     private final ReservedPlacesRepository reservedPlacesRepository ;
     private final ReservationService reservationService;
-    public ReservationController(JwtService jwtService, UserRepository userRepository, ParkingHistoryOfUserRepository parkingHistoryOfUserRepository , ReservedPlacesRepository reservedPlacesRepository , ReservationService reservationService) {
+    private final SimpMessagingTemplate messagingTemplate;
+
+    public ReservationController(JwtService jwtService, UserRepository userRepository, ParkingHistoryOfUserRepository parkingHistoryOfUserRepository , ReservedPlacesRepository reservedPlacesRepository , ReservationService reservationService , SimpMessagingTemplate messagingTemplate) {
         this.jwtService = jwtService;
         this.userRepository = userRepository;
         this.parkingHistoryOfUserRepository = parkingHistoryOfUserRepository;
         this.reservedPlacesRepository = reservedPlacesRepository;
         this.reservationService = reservationService;
+        this.messagingTemplate = messagingTemplate;
         for (int i = 1; i <=7; i++) {
             zones.put(i, new ZoneStatus(i, "free"));
+
+
         }
     }
 
@@ -58,6 +64,7 @@ public class ReservationController {
                 .map(zone -> new ZoneStatus(zone.getZoneId(), zone.getStatus()))
                 .collect(Collectors.toList());
     }
+
 
 
     @GetMapping("/permit/free")

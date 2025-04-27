@@ -17,6 +17,7 @@ const TabsLayout = () => {
       <Tabs.Screen name='settings/Settings' options={{ headerShown: false, title: 'Settings', tabBarIcon: () => <AntDesign name="setting" size={24} color="white" />, tabBarBackground: () => <View className='bg-black h-full'  /> }} />
       <Tabs.Screen name='maps/Maps' options={{ headerShown: false, title: 'Maps', tabBarIcon: () => <MaterialCommunityIcons name="google-maps" size={24} color="white" />, tabBarBackground: () => <View className='bg-black h-full' /> }} />
       <Tabs.Screen name='pages/FeedbackPage' options={{ headerShown: false, title: 'Feedback', tabBarIcon: () => <FontAwesome5 name="comment-dots" size={24} color="white" />, tabBarBackground: () => <View className='bg-black h-full' /> }} />
+      <Tabs.Screen name='places/Places' options={{ headerShown: false, title: 'Places', tabBarIcon: () => <MaterialCommunityIcons name="map-marker" size={24} color="white" />, tabBarBackground: () => <View className='bg-black h-full' /> }} />	
     </Tabs>
   )
 }

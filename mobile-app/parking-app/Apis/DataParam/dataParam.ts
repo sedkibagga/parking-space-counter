@@ -23,6 +23,10 @@ export type updateUserCarDto = {
     model: string,
     color: string
 }
+export type CreateReservationDto = {
+  reservation_Time: string;
+  reservation_Duration: string;
+};
 export type deleteUserCarDto = {
 
 }
