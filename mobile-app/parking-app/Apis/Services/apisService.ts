@@ -45,8 +45,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
-const BaseUri = "http://192.168.31.197:8080/";
-
+const BaseUri = 
 const login = async (data: loginDto, setUser: (user: loginResponse | null) => void): Promise<loginResponse> => {
     try {
         const response = await axios.post(`${BaseUri}api/login`, data);
