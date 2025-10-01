@@ -27,7 +27,7 @@ import {
 } from "../DataResponse/dataResponse";
 
 
-const BaseUri = "http://localhost:8080/";
+const BaseUri = 
 
 const login = async (data: loginDto, setUser: (user: loginResponse | null) => void): Promise<loginResponse> => {
     try {
